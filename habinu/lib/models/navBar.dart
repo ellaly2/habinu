@@ -21,15 +21,35 @@ class NavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'Camera'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(height: 1, color: Colors.grey[400]),
+        Container(
+          padding: const EdgeInsets.only(top: 20),
+          child: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home, size: 50),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.camera_alt, size: 50),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person, size: 50),
+                label: '',
+              ),
+            ],
+            currentIndex: pageIndex,
+            selectedItemColor: Colors.amber[800],
+            onTap: onTap,
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+          ),
+        ),
       ],
-      currentIndex: pageIndex,
-      selectedItemColor: Colors.amber[800],
-      onTap: onTap,
     );
   }
 }
