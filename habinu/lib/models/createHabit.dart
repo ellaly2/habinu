@@ -48,9 +48,9 @@ class _CreateHabitState extends State<CreateHabit> {
                 Text(
                   "Create Habit",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 25,
                     color: Color(0xFFfdc88f),
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w900
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -90,9 +90,9 @@ class _CreateHabitState extends State<CreateHabit> {
                 Text(
                   "Your habits:",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 25,
                     color: Color(0xFFfdc88f),
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -121,7 +121,7 @@ class _CreateHabitState extends State<CreateHabit> {
                                     onTap: () => _incrementStreak(index),
                                     child: Text(
                                       habit["name"],
-                                      style: TextStyle(color: Color(0xFF818181)),
+                                      style: TextStyle(fontSize: 20,color: Color(0xFF818181), fontWeight: FontWeight.w700),
                                     ),
                                   ),
                                 ),
@@ -131,7 +131,8 @@ class _CreateHabitState extends State<CreateHabit> {
                                       habit["streak"].toString(),
                                       style: TextStyle(
                                         color: Colors.black,
-                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
                                     SizedBox(width: 4),
