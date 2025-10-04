@@ -89,8 +89,8 @@ class ProfilePage extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Image.asset('lib/assets/panda-profile.svg', height: 50, width: 50),
-          Icon(Icons.account_circle, size: 80, color: Colors.grey),
+          Image.asset('lib/assets/panda-profile.png', height: 150, width: 150),
+          // Icon(Icons.account_circle, size: 80, color: Colors.grey),
           Align(
             alignment: Alignment.bottomRight,
             child: Card(
