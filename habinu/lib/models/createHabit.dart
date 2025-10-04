@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 
 class CreateHabit extends StatefulWidget {
+  const CreateHabit({Key? key}) : super(key: key);
+
   @override
   _CreateHabitState createState() => _CreateHabitState();
 }
 
 class _CreateHabitState extends State<CreateHabit> {
   final TextEditingController _controller = TextEditingController();
-  List<Map<String, dynamic>> habits = [];
+  List<Map<String, dynamic>> habits = []; // Load from file
 
   void _addHabit() {
     if (_controller.text.isNotEmpty) {
       setState(() {
-        habits.add({
-          "name": _controller.text,
-          "streak": 0,
-        });
+        habits.add({"name": _controller.text, "streak": 0});
         _controller.clear();
       });
     }
@@ -37,7 +36,6 @@ class _CreateHabitState extends State<CreateHabit> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -45,13 +43,32 @@ class _CreateHabitState extends State<CreateHabit> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  "Create Habit",
-                  style: TextStyle(
-                    fontSize: 25,
-                    color: Color(0xFFfdc88f),
-                    fontWeight: FontWeight.w900
-                  ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFFB3B3B3),
+                        size: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        "Create Habit",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: Color(0xFFfdc88f),
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 48), // To balance the IconButton
+                  ],
                 ),
                 const SizedBox(height: 20),
                 TextField(
@@ -70,8 +87,10 @@ class _CreateHabitState extends State<CreateHabit> {
                     onTap: _addHabit,
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: Color(0xFFfdc88f),
                         borderRadius: BorderRadius.circular(8.0),
@@ -108,7 +127,9 @@ class _CreateHabitState extends State<CreateHabit> {
                           return Container(
                             margin: EdgeInsets.symmetric(vertical: 5),
                             padding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 15),
+                              horizontal: 10,
+                              vertical: 15,
+                            ),
                             decoration: BoxDecoration(
                               color: Color(0xFFEEEFF1),
                               borderRadius: BorderRadius.circular(10),
@@ -121,7 +142,11 @@ class _CreateHabitState extends State<CreateHabit> {
                                     onTap: () => _incrementStreak(index),
                                     child: Text(
                                       habit["name"],
-                                      style: TextStyle(fontSize: 20,color: Color(0xFF818181), fontWeight: FontWeight.w700),
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Color(0xFF818181),
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -136,13 +161,17 @@ class _CreateHabitState extends State<CreateHabit> {
                                       ),
                                     ),
                                     SizedBox(width: 4),
-                                    Icon(Icons.local_fire_department,
-                                        color: Colors.orange),
+                                    Icon(
+                                      Icons.local_fire_department,
+                                      color: Colors.orange,
+                                    ),
                                     SizedBox(width: 10),
                                     GestureDetector(
                                       onTap: () => _removeHabit(index),
-                                      child: Icon(Icons.close,
-                                          color: Colors.white),
+                                      child: Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ],
                                 ),
