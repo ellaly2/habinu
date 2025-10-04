@@ -108,10 +108,10 @@ class _CreateHabitState extends State<CreateHabit> {
                           return Container(
                             margin: EdgeInsets.symmetric(vertical: 5),
                             padding: EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 10),
+                                horizontal: 10, vertical: 15),
                             decoration: BoxDecoration(
                               color: Color(0xFFEEEFF1),
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -121,7 +121,7 @@ class _CreateHabitState extends State<CreateHabit> {
                                     onTap: () => _incrementStreak(index),
                                     child: Text(
                                       habit["name"],
-                                      style: TextStyle(color: Colors.white),
+                                      style: TextStyle(color: Color(0xFF818181)),
                                     ),
                                   ),
                                 ),
@@ -130,7 +130,7 @@ class _CreateHabitState extends State<CreateHabit> {
                                     Text(
                                       habit["streak"].toString(),
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: Colors.black,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
