@@ -24,7 +24,7 @@ class NavBar extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(height: 1, color: Colors.grey[400]),
+        Container(height: 1, color: Color(0xffCBD0D3)),
         Container(
           padding: const EdgeInsets.only(top: 20),
           child: BottomNavigationBar(
@@ -43,7 +43,7 @@ class NavBar extends StatelessWidget {
               ),
             ],
             currentIndex: pageIndex,
-            selectedItemColor: Colors.amber[800],
+            selectedItemColor: Color(0xfffbb86a),
             onTap: onTap,
             elevation: 0,
             backgroundColor: Colors.transparent,
