@@ -135,7 +135,12 @@ class HomePage extends StatelessWidget {
                   Text(timeAgo, style: TextStyle(color: Color(0xff818181))),
                 ],
               ),
-              Text(streak, style: TextStyle(fontWeight: FontWeight.w600)),
+              Row(
+                children: [
+                  Text(streak, style: TextStyle(fontWeight: FontWeight.w600)),
+                  Icon(Icons.local_fire_department, color: Colors.orange),
+                ],
+              ),
             ],
           ),
         ),

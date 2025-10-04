@@ -6,20 +6,24 @@ import 'package:habinu/models/createHabit.dart';
 
 class ProfilePage extends StatelessWidget {
   // Marked fields as final to adhere to immutability requirements
-  final int streak = 69;
   final String username = 'brendan';
   final Map<String, String> stats = {
     // Insert stats here
-    'Longest Streak': '9999🔥',
-    'Total Habits': '35',
-    'Friends': '14',
-    'Favorite Habit': 'Brushing Teeth',
+    'longestStreak': '9999',
+    'totalHabits': '4',
+    'habitsPosted': '14',
+    'favoriteHabit': 'Brushing Teeth',
   };
+
   final List<Map<String, dynamic>> habits = [
     {"name": "Meditate", "streak": 5},
     {"name": "Exercise", "streak": 10},
-    {"name": "Read", "streak": 3},
+    {"name": "Read", "streak": 36},
   ];
+
+  late final int streak = habits.isNotEmpty
+      ? habits.map((h) => h["streak"] as int).reduce((a, b) => a > b ? a : b)
+      : 0;
 
   @override
   Widget build(BuildContext context) {
@@ -59,11 +63,9 @@ class ProfilePage extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => CreateHabit(),
-                  ),
-                );
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (context) => CreateHabit()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFffddb7),
@@ -164,34 +166,117 @@ class ProfilePage extends StatelessWidget {
       childAspectRatio: 3,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      children: List.generate(4, (index) {
-        return Card(
+      children: [
+        Card(
           color: Color(0xffffddb7),
           shadowColor: Colors.transparent, // Unless we want one!
           margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: Padding(
-            padding: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.only(top: 5.0, left: 5.0),
             child: Column(
               children: [
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    stats.keys.elementAt(index),
+                    "Longest Streak",
+                    style: TextStyle(fontSize: 12, color: Color(0xff818181)),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    children: [
+                      Text(
+                        stats['longestStreak'] ?? '0',
+                        style: TextStyle(fontSize: 20, color: Colors.black),
+                      ),
+                      Icon(Icons.local_fire_department, color: Colors.orange),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Card(
+          color: Color(0xffffddb7),
+          shadowColor: Colors.transparent, // Unless we want one!
+          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 5.0, left: 5.0),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Total Habits",
                     style: TextStyle(fontSize: 12, color: Color(0xff818181)),
                   ),
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    stats.values.elementAt(index),
+                    stats['totalHabits'] ?? '0',
                     style: TextStyle(fontSize: 20, color: Colors.black),
                   ),
                 ),
               ],
             ),
           ),
-        );
-      }),
+        ),
+        Card(
+          color: Color(0xffffddb7),
+          shadowColor: Colors.transparent, // Unless we want one!
+          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 5.0, left: 5.0),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Habits Posted",
+                    style: TextStyle(fontSize: 12, color: Color(0xff818181)),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    stats['habitsPosted'] ?? '0',
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Card(
+          color: Color(0xffffddb7),
+          shadowColor: Colors.transparent, // Unless we want one!
+          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 5.0, left: 5.0),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Favorite Habit",
+                    style: TextStyle(fontSize: 12, color: Color(0xff818181)),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    stats['favoriteHabit'] ?? 'None',
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -218,13 +303,19 @@ class ProfilePage extends StatelessWidget {
               shadowColor: Colors.transparent,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                child: Text(
-                  '$streak🔥',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '$streak',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Icon(Icons.local_fire_department, color: Colors.orange),
+                  ],
                 ),
               ),
             ),
