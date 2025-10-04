@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habinu/models/createHabit.dart';
 import 'package:habinu/models/home.dart';
 
 void main() {
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: CreateHabit(),
     );
   }
 }
