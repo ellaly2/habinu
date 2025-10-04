@@ -36,10 +36,20 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Center profileDetails() {
-    return Center(
-      child: Column(
-        children: [profilePic(streak), Text(username), statsDisplay(stats)],
+  Widget profileDetails() {
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          children: [
+            SizedBox(height: 70),
+            profilePic(streak),
+            Text(
+              username,
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 30),
+            ),
+            statsDisplay(stats),
+          ],
+        ),
       ),
     );
   }
@@ -89,19 +99,28 @@ class ProfilePage extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Image.asset('lib/assets/panda-profile.png', height: 150, width: 150),
+          Image.asset(
+            'lib/assets/panda-profile.png',
+            height: 100,
+            width: 100,
+            fit: BoxFit.cover,
+          ),
           // Icon(Icons.account_circle, size: 80, color: Colors.grey),
           Align(
             alignment: Alignment.bottomRight,
             child: Card(
               color: Color(0xffffddb7),
-              margin: EdgeInsets.all(10),
+              // margin: EdgeInsets.all(10),
               shadowColor: Colors.transparent,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 child: Text(
                   '$streak🔥',
-                  style: TextStyle(color: Colors.black, fontSize: 14),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
