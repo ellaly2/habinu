@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:habinu/models/createHabit.dart';
+import 'package:habinu/models/getStarted.dart';
 import 'package:habinu/models/home.dart';
 
 void main() {
@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Poppins',
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -31,8 +32,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool firstTimeUser = true;
+
   @override
   Widget build(BuildContext context) {
-    return HomePage();
+    return firstTimeUser ? GetStartedPage() : HomePage();
   }
 }
