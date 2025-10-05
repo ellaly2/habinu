@@ -47,35 +47,41 @@ class CameraPage extends State<CameraPageState> {
 
   @override
   Widget build(BuildContext build) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green,
-        title: Text("Take a picture!"),
-      ),
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return CameraPreview(_controller);
-          } else {
-            return const Center(child: CircularProgressIndicator());
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, result) => {
+        _controller.pausePreview()
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.green,
+          title: Text("Take a picture!"),
+        ),
+        body: FutureBuilder<void>(
+          future: _initializeControllerFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return CameraPreview(_controller);
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            }
           }
-        }
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          try { 
-            await _initializeControllerFuture;
-            final image = await _controller.takePicture();
-            _controller.pausePreview();
-            toDisplayImagePage(image);
-          } catch (e) { 
-            debugPrint(e.toString());
-          }
-        },
-        child: const Icon(Icons.camera_alt),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            try { 
+              await _initializeControllerFuture;
+              final image = await _controller.takePicture();
+              _controller.pausePreview();
+              toDisplayImagePage(image);
+            } catch (e) { 
+              debugPrint(e.toString());
+            }
+          },
+          child: const Icon(Icons.camera_alt),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      )
     );
   }
 }

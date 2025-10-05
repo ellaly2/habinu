@@ -70,9 +70,10 @@ class HomePage extends State<HomePageState> {
         pageIndex: 0,
         onTap: (index) {
           if (index == 1) {
-            Navigator.of(
+            Navigator.push(
               context,
-            ).pushReplacement(NoAnimationPageRoute(page: CameraPageState(camera: camera)));
+              MaterialPageRoute(builder: (context) => CameraPageState(camera: camera))
+            );
           } else if (index == 2) {
             Navigator.of(
               context,
