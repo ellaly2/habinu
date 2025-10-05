@@ -82,15 +82,13 @@ class LocalStorage {
 
   /// Favourite habit: use saved one if habits list is empty
   static Map<String, dynamic>? getFavouriteHabit() {
-    final habits = getHabits();
-    if (habits.isEmpty) {
-      final name = _prefs?.getString(_favoriteHabitKey);
-      if (name == null) return null;
-      return {"name": name, "streak": _prefs?.getInt(_maxStreakKey) ?? 0};
-    }
-    habits.sort((a, b) => (b["streak"] ?? 0).compareTo(a["streak"] ?? 0));
-    return habits.first;
+    final String? name = _prefs?.getString(_favoriteHabitKey);
+    final int maxStreak = _prefs?.getInt(_maxStreakKey) ?? 0;
+
+    if (name == null) return null;
+    return {"name": name, "streak": maxStreak};
   }
+
 
   static Future<void> clear() async {
     await _prefs?.remove(_habitsKey);
