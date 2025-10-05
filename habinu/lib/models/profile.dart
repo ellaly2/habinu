@@ -118,7 +118,7 @@ class ProfilePage extends State<ProfilePageState> {
                 ),
                 shadowColor: Colors.transparent,
               ),
-              child: const Text('Edit Habits', style: TextStyle(fontSize: 18)),
+              child: const Text('Edit Habits', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             ),
             const SizedBox(height: 40),
           ],
@@ -230,7 +230,7 @@ class ProfilePage extends State<ProfilePageState> {
               alignment: Alignment.centerLeft,
               child: Text(
                 title,
-                style: const TextStyle(fontSize: 12, color: Color(0xff818181)),
+                style: const TextStyle(fontSize: 12, color: Color(0xff818181), fontWeight: FontWeight.w600),
               ),
             ),
             Align(
@@ -239,7 +239,7 @@ class ProfilePage extends State<ProfilePageState> {
                 children: [
                   Text(
                     value,
-                    style: const TextStyle(fontSize: 20, color: Colors.black),
+                    style: const TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.w600),
                   ),
                   if (hasFire)
                     const Icon(
