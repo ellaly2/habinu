@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
           return const SizedBox.shrink(); // or splash/loading
         }
         if (snapshot.data == true) {
-          return HomePage();
+          return HomePageState();
         } else {
           return GetStartedPage();
         }

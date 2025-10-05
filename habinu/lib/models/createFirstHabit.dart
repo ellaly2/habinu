@@ -54,7 +54,7 @@ class _CreateFirstHabitState extends State<CreateFirstHabit> {
                         LocalStorage.addHabit(habitName);
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                            builder: (context) => ProfilePage(),
+                            builder: (context) => ProfilePageState(),
                           ),
                         );
                       }
