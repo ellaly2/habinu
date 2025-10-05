@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habinu/models/profile.dart';
+import 'package:habinu/models/data.dart';
 
 class CreateFirstHabit extends StatefulWidget {
   const CreateFirstHabit({Key? key}) : super(key: key);
@@ -50,10 +51,7 @@ class _CreateFirstHabitState extends State<CreateFirstHabit> {
                     onTap: () {
                       String habitName = _controller.text.trim();
                       if (habitName.isNotEmpty) {
-                        setState(() {
-                          habits.add({'name': habitName, 'streak': 0});
-                          _controller.clear();
-                        });
+                        LocalStorage.addHabit(habitName);
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                             builder: (context) => ProfilePage(),
