@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:habinu/models/data.dart';
 import 'package:habinu/models/home.dart';
 import 'package:habinu/models/getStarted.dart';
+import 'package:habinu/models/signUp.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // required for async init
