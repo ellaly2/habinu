@@ -56,7 +56,11 @@ class _CreateHabitState extends State<CreateHabit> {
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Color(0xFFB3B3B3), size: 30),
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFFB3B3B3),
+                        size: 30,
+                      ),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     const Expanded(
@@ -90,14 +94,20 @@ class _CreateHabitState extends State<CreateHabit> {
                     onTap: _addHabit,
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFfdc88f),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: const Text(
                         'Add',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -113,14 +123,20 @@ class _CreateHabitState extends State<CreateHabit> {
                 ),
                 const SizedBox(height: 15),
                 habits.isEmpty
-                    ? const Text("No habits yet. Add one above!", style: TextStyle(color: Colors.grey))
+                    ? const Text(
+                        "No habits yet. Add one above!",
+                        style: TextStyle(color: Colors.grey),
+                      )
                     : Column(
                         children: habits.asMap().entries.map((entry) {
                           int index = entry.key;
                           var habit = entry.value;
                           return Container(
                             margin: const EdgeInsets.symmetric(vertical: 5),
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 15,
+                            ),
                             decoration: BoxDecoration(
                               color: const Color(0xFFEEEFF1),
                               borderRadius: BorderRadius.circular(10),
@@ -152,11 +168,22 @@ class _CreateHabitState extends State<CreateHabit> {
                                       ),
                                     ),
                                     const SizedBox(width: 4),
-                                    const Icon(Icons.local_fire_department, color: Colors.orange),
+                                    const Icon(
+                                      Icons.local_fire_department,
+                                      color: Colors.orange,
+                                    ),
                                     const SizedBox(width: 10),
                                     GestureDetector(
                                       onTap: () => _removeHabit(index),
-                                      child: const Icon(Icons.close, color: Colors.white),
+                                      child: const Icon(
+                                        Icons.close,
+                                        color: Color.fromARGB(
+                                          255,
+                                          255,
+                                          153,
+                                          153,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),

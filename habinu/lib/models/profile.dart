@@ -51,11 +51,11 @@ class ProfilePage extends State<ProfilePageState> {
   }
 
   Map<String, String> get stats => {
-        'longestStreak': LocalStorage.getLongestStreak().toString(),
-        'totalHabits': LocalStorage.getTotalHabits().toString(),
-        'habitsPosted': LocalStorage.getTotalPosts().toString(),
-        'favoriteHabit': LocalStorage.getFavouriteHabit()?['name'] ?? 'None',
-      };
+    'longestStreak': LocalStorage.getLongestStreak().toString(),
+    'totalHabits': LocalStorage.getTotalHabits().toString(),
+    'habitsPosted': LocalStorage.getTotalPosts().toString(),
+    'favoriteHabit': LocalStorage.getFavouriteHabit()?['name'] ?? 'None',
+  };
 
   Future<void> initializeCamera() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -70,6 +70,7 @@ class ProfilePage extends State<ProfilePageState> {
         : 0;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: _profileDetails(context, streak),
       bottomNavigationBar: NavBar(
         pageIndex: 2,
@@ -107,7 +108,8 @@ class ProfilePage extends State<ProfilePageState> {
               onPressed: () {
                 Navigator.of(context)
                     .push(
-                        MaterialPageRoute(builder: (_) => const CreateHabit()))
+                      MaterialPageRoute(builder: (_) => const CreateHabit()),
+                    )
                     .then((_) => _loadHabits());
               },
               style: ElevatedButton.styleFrom(
@@ -116,8 +118,10 @@ class ProfilePage extends State<ProfilePageState> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 shadowColor: Colors.transparent,
               ),
               child: const Text('Edit Habits', style: TextStyle(fontSize: 18)),
@@ -142,8 +146,10 @@ class ProfilePage extends State<ProfilePageState> {
         ),
         const SizedBox(height: 15),
         habits.isEmpty
-            ? const Text("No habits yet. Add one below!",
-                style: TextStyle(color: Colors.grey))
+            ? const Text(
+                "No habits yet. Add one below!",
+                style: TextStyle(color: Colors.grey),
+              )
             : Column(
                 children: habits.asMap().entries.map((entry) {
                   int index = entry.key;
@@ -153,7 +159,9 @@ class ProfilePage extends State<ProfilePageState> {
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 5),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 15),
+                        horizontal: 10,
+                        vertical: 15,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFeeeff1),
                         borderRadius: BorderRadius.circular(10),
@@ -185,8 +193,10 @@ class ProfilePage extends State<ProfilePageState> {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(Icons.local_fire_department,
-                                  color: Colors.orange),
+                              const Icon(
+                                Icons.local_fire_department,
+                                color: Colors.orange,
+                              ),
                               const SizedBox(width: 10),
                             ],
                           ),
@@ -226,16 +236,24 @@ class ProfilePage extends State<ProfilePageState> {
           children: [
             Align(
               alignment: Alignment.centerLeft,
-              child: Text(title,
-                  style: const TextStyle(fontSize: 12, color: Color(0xff818181))),
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 12, color: Color(0xff818181)),
+              ),
             ),
             Align(
               alignment: Alignment.centerLeft,
               child: Row(
                 children: [
-                  Text(value, style: const TextStyle(fontSize: 20, color: Colors.black)),
+                  Text(
+                    value,
+                    style: const TextStyle(fontSize: 20, color: Colors.black),
+                  ),
                   if (hasFire)
-                    const Icon(Icons.local_fire_department, color: Colors.orange),
+                    const Icon(
+                      Icons.local_fire_department,
+                      color: Colors.orange,
+                    ),
                 ],
               ),
             ),
@@ -276,7 +294,10 @@ class ProfilePage extends State<ProfilePageState> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const Icon(Icons.local_fire_department, color: Colors.orange),
+                    const Icon(
+                      Icons.local_fire_department,
+                      color: Colors.orange,
+                    ),
                   ],
                 ),
               ),

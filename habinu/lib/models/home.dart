@@ -47,13 +47,12 @@ class HomePage extends State<HomePageState> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Row(
           children: [
-            Image.asset('lib/assets/dog-study.png',
-             width: 50,
-             ),
+            Image.asset('lib/assets/dog-study.png', width: 50),
             Text(
               'Habinu',
               style: TextStyle(
@@ -143,8 +142,7 @@ class HomePage extends State<HomePageState> {
           ),
         ),
         Container(
-           // Adjust to image size?
-          
+          // Adjust to image size?
           decoration: BoxDecoration(color: Colors.grey[300]),
           child: AspectRatio(
             aspectRatio: 1 / 1,
