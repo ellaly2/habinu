@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habinu/models/data.dart';
 import 'package:habinu/models/home.dart';
+import 'package:habinu/models/data.dart';
 import 'package:habinu/models/getStarted.dart';
 
 void main() async {
