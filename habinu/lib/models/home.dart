@@ -2,34 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:habinu/models/navBar.dart';
 import 'package:habinu/models/camera.dart';
 import 'package:habinu/models/profile.dart';
+import 'package:habinu/models/data.dart';
 import 'package:camera/camera.dart';
+import 'dart:io';
 
 class HomePageState extends StatefulWidget {
   const HomePageState({super.key});
-  
-  @override 
+
+  @override
   State<HomePageState> createState() => HomePage();
 }
 
 class HomePage extends State<HomePageState> {
   late CameraDescription camera;
-  List<Map<String, String>> posts = [
-    {
-      'imagePath': 'lib/assets/code.png',
-      'habit': 'Reading',
-      'streak': '5',
-      'date': DateTime.now().subtract(Duration(hours: 3)).toString(),
-      'username': 'brendan',
-    },
-    {
-      'imagePath': 'lib/assets/piano.png',
-      'habit': 'Piano',
-      'streak': '15',
-      'date': DateTime.now().subtract(Duration(minutes: 15)).toString(),
-      'username': 'brendan',
-    },
-    // Add more posts as needed
-  ];
+  List<Map<String, dynamic>> posts = [];
 
   Future<void> initializeCamera() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -37,11 +23,19 @@ class HomePage extends State<HomePageState> {
     camera = cameras.first;
   }
 
+  Future<void> _loadPosts() async {
+    // Validate habits first to ensure streaks are up to date
+    await LocalStorage.validateAndUpdateStreaks();
+    setState(() {
+      posts = LocalStorage.getAllPostsSorted();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-
     initializeCamera();
+    _loadPosts();
   }
 
   @override
@@ -63,16 +57,67 @@ class HomePage extends State<HomePageState> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_forever, color: Colors.red, size: 24),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Clear All Data'),
+                    content: const Text(
+                      'This will delete all habits and posts. This action cannot be undone.\n\nAre you sure?',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          await LocalStorage.clear();
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                            _loadPosts(); // Refresh the UI
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('All data cleared!'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        child: const Text(
+                          'Delete All',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            tooltip: 'Clear all data (Debug)',
+          ),
+        ],
       ),
       body: postsList(),
       bottomNavigationBar: NavBar(
         pageIndex: 0,
         onTap: (index) {
-          if (index == 1) {
+          if (index == 0) {
+            // Refresh posts when home tab is tapped
+            _loadPosts();
+          } else if (index == 1) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CameraPageState(camera: camera))
-            );
+              MaterialPageRoute(
+                builder: (context) => CameraPageState(camera: camera),
+              ),
+            ).then(
+              (_) => _loadPosts(),
+            ); // Refresh posts when returning from camera
           } else if (index == 2) {
             Navigator.of(
               context,
@@ -84,16 +129,43 @@ class HomePage extends State<HomePageState> {
   }
 
   Widget postsList() {
+    if (posts.isEmpty) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.camera_alt_outlined, size: 64, color: Color(0xFFB3B3B3)),
+            SizedBox(height: 16),
+            Text(
+              "No posts yet!",
+              style: TextStyle(
+                fontSize: 20,
+                color: Color(0xFFB3B3B3),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              "Take a photo and post it to a habit to see it here.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: Color(0xFFB3B3B3)),
+            ),
+          ],
+        ),
+      );
+    }
+
     return ListView.builder(
       itemCount: posts.length,
       itemBuilder: (context, index) {
         final postData = posts[index];
+
         return post(
-          imagePath: postData['imagePath']!,
-          habit: postData['habit']!,
-          streak: postData['streak']!,
-          date: DateTime.parse(postData['date']!),
-          username: postData['username']!,
+          imagePath: postData['imagePath'] ?? '',
+          habit: postData['habit'] ?? 'Unknown Habit',
+          streak: postData['streak'] ?? '0',
+          date: DateTime.parse(postData['date'] ?? DateTime.now().toString()),
+          username: postData['username'] ?? 'Unknown',
         );
       },
     );
@@ -146,12 +218,23 @@ class HomePage extends State<HomePageState> {
           decoration: BoxDecoration(color: Colors.grey[300]),
           child: AspectRatio(
             aspectRatio: 1 / 1,
-            child: Image.asset(
-              imagePath,
-              height: 500,
-              width: 500,
-              fit: BoxFit.cover,
-            ),
+            child: File(imagePath).existsSync()
+                ? Image.file(
+                    File(imagePath),
+                    height: 500,
+                    width: 500,
+                    fit: BoxFit.cover,
+                  )
+                : Container(
+                    height: 500,
+                    width: 500,
+                    color: Colors.grey[300],
+                    child: const Icon(
+                      Icons.broken_image,
+                      color: Colors.grey,
+                      size: 64,
+                    ),
+                  ),
           ),
         ),
         Padding(

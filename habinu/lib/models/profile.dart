@@ -35,8 +35,9 @@ class ProfilePage extends State<ProfilePageState> {
   }
 
   Future<void> _loadHabits() async {
+    final validatedHabits = await LocalStorage.getHabitsWithValidation();
     setState(() {
-      habits = LocalStorage.getHabits();
+      habits = validatedHabits;
     });
   }
 
@@ -80,9 +81,12 @@ class ProfilePage extends State<ProfilePageState> {
               context,
             ).pushReplacement(NoAnimationPageRoute(page: HomePageState()));
           } else if (index == 1) {
-            Navigator.of(
+            Navigator.push(
               context,
-            ).pushReplacement(NoAnimationPageRoute(page: CameraPageState(camera: camera)));
+              MaterialPageRoute(
+                builder: (context) => CameraPageState(camera: camera),
+              ),
+            );
           }
         },
       ),
@@ -193,9 +197,11 @@ class ProfilePage extends State<ProfilePageState> {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(
+                              Icon(
                                 Icons.local_fire_department,
-                                color: Colors.orange,
+                                color: LocalStorage.wasHabitUpdatedToday(habit)
+                                    ? Colors.orange
+                                    : Colors.grey,
                               ),
                               const SizedBox(width: 10),
                             ],
@@ -229,7 +235,7 @@ class ProfilePage extends State<ProfilePageState> {
     return Card(
       color: const Color(0xffffddb7),
       shadowColor: Colors.transparent,
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       child: Padding(
         padding: const EdgeInsets.only(top: 5.0, left: 5.0),
         child: Column(
