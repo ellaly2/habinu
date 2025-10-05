@@ -70,7 +70,11 @@ flutter:
     - lib/assets/piano.png
     - lib/assets/16-9rec.png
     - lib/assets/4-3rec.png
-
+    - lib/assets/home-active.png
+    - lib/assets/profile-active.png
+    - lib/assets/profile.png
+    - lib/assets/camera.png
+    - lib/assets/home.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
