@@ -37,11 +37,20 @@ class _CreateFirstHabitState extends State<CreateFirstHabit> {
                 const SizedBox(height: 20),
                 TextField(
                   controller: _controller,
+                  cursorColor: Color(0xfffbb86a),
                   decoration: InputDecoration(
                     labelText: "Habit Name",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(
+                        color: Color(0xfffbb86a),
+                        width: 2.0,
+                      ),
+                    ),
+                    labelStyle: const TextStyle(color: Color(0xff818181)),
                   ),
                 ),
                 const SizedBox(height: 15),
