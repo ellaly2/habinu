@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habinu/models/data.dart';
 import 'package:habinu/models/home.dart';
-import 'package:habinu/models/data.dart'; // <-- import your LocalStorage
+import 'package:habinu/models/data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // required for async init

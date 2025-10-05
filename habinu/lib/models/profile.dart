@@ -3,92 +3,116 @@ import 'package:habinu/models/navBar.dart';
 import 'package:habinu/models/home.dart';
 import 'package:habinu/models/camera.dart';
 import 'package:habinu/models/createHabit.dart';
+import 'package:habinu/models/data.dart';
 
-class ProfilePage extends StatelessWidget {
-  // Marked fields as final to adhere to immutability requirements
-  final String username = 'brendan';
-  final Map<String, String> stats = {
-    // Insert stats here
-    'longestStreak': '9999',
-    'totalHabits': '4',
-    'habitsPosted': '14',
-    'favoriteHabit': 'Brushing Teeth',
-  };
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({Key? key}) : super(key: key);
 
-  final List<Map<String, dynamic>> habits = [
-    {"name": "Meditate", "streak": 5},
-    {"name": "Exercise", "streak": 10},
-    {"name": "Read", "streak": 36},
-  ];
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
 
-  late final int streak = habits.isNotEmpty
-      ? habits.map((h) => h["streak"] as int).reduce((a, b) => a > b ? a : b)
-      : 0;
+class _ProfilePageState extends State<ProfilePage> {
+  List<Map<String, dynamic>> habits = [];
+  String username = 'brendan';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHabits();
+  }
+
+  Future<void> _loadHabits() async {
+    setState(() {
+      habits = LocalStorage.getHabits();
+    });
+  }
+
+  Future<void> _incrementStreak(int index) async {
+    await LocalStorage.incrementStreak(index);
+    _loadHabits();
+  }
+
+  Future<void> _removeHabit(int index) async {
+    await LocalStorage.removeHabit(index);
+    _loadHabits();
+  }
+
+  Map<String, String> get stats => {
+        'longestStreak': LocalStorage.getLongestStreak().toString(),
+        'totalHabits': LocalStorage.getTotalHabits().toString(),
+        'habitsPosted': LocalStorage.getTotalPosts().toString(),
+        'favoriteHabit': LocalStorage.getFavouriteHabit()?['name'] ?? 'None',
+      };
 
   @override
   Widget build(BuildContext context) {
+    int streak = habits.isNotEmpty
+        ? habits.map((h) => h["streak"] as int).reduce((a, b) => a > b ? a : b)
+        : 0;
+
     return Scaffold(
-      body: profileDetails(context),
+      body: _profileDetails(context, streak),
       bottomNavigationBar: NavBar(
         pageIndex: 2,
         onTap: (index) {
           if (index == 0) {
-            Navigator.of(
-              context,
-            ).pushReplacement(NoAnimationPageRoute(page: HomePage()));
+            Navigator.of(context).pushReplacement(
+                NoAnimationPageRoute(page: HomePage()));
           } else if (index == 1) {
-            Navigator.of(
-              context,
-            ).pushReplacement(NoAnimationPageRoute(page: CameraPage()));
+            Navigator.of(context).pushReplacement(
+                NoAnimationPageRoute(page: CameraPage()));
           }
         },
       ),
     );
   }
 
-  Widget profileDetails(BuildContext context) {
+  Widget _profileDetails(BuildContext context, int streak) {
     return SingleChildScrollView(
       child: Center(
         child: Column(
           children: [
-            SizedBox(height: 70),
-            profilePic(streak),
+            const SizedBox(height: 70),
+            _profilePic(streak),
             Text(
               username,
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 30),
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 30),
             ),
-            statsDisplay(stats),
-            SizedBox(height: 20),
-            habitList(habits),
-            SizedBox(height: 20),
+            _statsDisplay(stats),
+            const SizedBox(height: 20),
+            _habitList(),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (context) => CreateHabit()));
+                Navigator.of(context)
+                    .push(
+                        MaterialPageRoute(builder: (_) => const CreateHabit()))
+                    .then((_) => _loadHabits());
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFffddb7),
+                backgroundColor: const Color(0xFFffddb7),
                 foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shadowColor: Colors.transparent,
               ),
-              child: Text('Edit Habits', style: TextStyle(fontSize: 18)),
+              child: const Text('Edit Habits', style: TextStyle(fontSize: 18)),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
 
-  Widget habitList(List<Map<String, dynamic>> habits) {
+  Widget _habitList() {
     return Column(
       children: [
-        Text(
+        const Text(
           "Your habits:",
           style: TextStyle(
             fontSize: 25,
@@ -98,23 +122,20 @@ class ProfilePage extends StatelessWidget {
         ),
         const SizedBox(height: 15),
         habits.isEmpty
-            ? Text(
-                "No habits yet. Add one below!",
-                style: TextStyle(color: Colors.grey),
-              )
+            ? const Text("No habits yet. Add one below!",
+                style: TextStyle(color: Colors.grey))
             : Column(
                 children: habits.asMap().entries.map((entry) {
+                  int index = entry.key;
                   var habit = entry.value;
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 5),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 15,
-                      ),
+                      margin: const EdgeInsets.symmetric(vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 15),
                       decoration: BoxDecoration(
-                        color: Color(0xFFeeeff1),
+                        color: const Color(0xFFeeeff1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
@@ -122,9 +143,10 @@ class ProfilePage extends StatelessWidget {
                         children: [
                           Expanded(
                             child: GestureDetector(
+                              onTap: () => _incrementStreak(index),
                               child: Text(
                                 habit["name"],
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 20,
                                   color: Color(0xFF818181),
                                   fontWeight: FontWeight.w700,
@@ -136,18 +158,16 @@ class ProfilePage extends StatelessWidget {
                             children: [
                               Text(
                                 habit["streak"].toString(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
-                              SizedBox(width: 4),
-                              Icon(
-                                Icons.local_fire_department,
-                                color: Colors.orange,
-                              ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.local_fire_department,
+                                  color: Colors.orange),
+                              const SizedBox(width: 10),
                             ],
                           ),
                         ],
@@ -160,128 +180,52 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget statsDisplay(Map<String, String> stats) {
+  Widget _statsDisplay(Map<String, String> stats) {
     return GridView.count(
       crossAxisCount: 2,
       childAspectRatio: 3,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        Card(
-          color: Color(0xffffddb7),
-          shadowColor: Colors.transparent, // Unless we want one!
-          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 5.0, left: 5.0),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Longest Streak",
-                    style: TextStyle(fontSize: 12, color: Color(0xff818181)),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    children: [
-                      Text(
-                        stats['longestStreak'] ?? '0',
-                        style: TextStyle(fontSize: 20, color: Colors.black),
-                      ),
-                      Icon(Icons.local_fire_department, color: Colors.orange),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Card(
-          color: Color(0xffffddb7),
-          shadowColor: Colors.transparent, // Unless we want one!
-          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 5.0, left: 5.0),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Total Habits",
-                    style: TextStyle(fontSize: 12, color: Color(0xff818181)),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    stats['totalHabits'] ?? '0',
-                    style: TextStyle(fontSize: 20, color: Colors.black),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Card(
-          color: Color(0xffffddb7),
-          shadowColor: Colors.transparent, // Unless we want one!
-          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 5.0, left: 5.0),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Habits Posted",
-                    style: TextStyle(fontSize: 12, color: Color(0xff818181)),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    stats['habitsPosted'] ?? '0',
-                    style: TextStyle(fontSize: 20, color: Colors.black),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Card(
-          color: Color(0xffffddb7),
-          shadowColor: Colors.transparent, // Unless we want one!
-          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 5.0, left: 5.0),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Favorite Habit",
-                    style: TextStyle(fontSize: 12, color: Color(0xff818181)),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    stats['favoriteHabit'] ?? 'None',
-                    style: TextStyle(fontSize: 20, color: Colors.black),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        _statCard("Longest Streak", stats['longestStreak'] ?? '0', true),
+        _statCard("Total Habits", stats['totalHabits'] ?? '0', false),
+        _statCard("Habits Posted", stats['habitsPosted'] ?? '0', false),
+        _statCard("Favorite Habit", stats['favoriteHabit'] ?? 'None', false),
       ],
     );
   }
 
-  Widget profilePic(int streak) {
-    // In reality would also need input of username or pic
+  Widget _statCard(String title, String value, bool hasFire) {
+    return Card(
+      color: const Color(0xffffddb7),
+      shadowColor: Colors.transparent,
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 5.0, left: 5.0),
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(title,
+                  style: const TextStyle(fontSize: 12, color: Color(0xff818181))),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Row(
+                children: [
+                  Text(value, style: const TextStyle(fontSize: 20, color: Colors.black)),
+                  if (hasFire)
+                    const Icon(Icons.local_fire_department, color: Colors.orange),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _profilePic(int streak) {
     return SizedBox(
       height: 100,
       width: 150,
@@ -294,27 +238,25 @@ class ProfilePage extends StatelessWidget {
             width: 100,
             fit: BoxFit.cover,
           ),
-          // Icon(Icons.account_circle, size: 80, color: Colors.grey),
           Align(
             alignment: Alignment.bottomRight,
             child: Card(
-              color: Color(0xffffddb7),
-              // margin: EdgeInsets.all(10),
+              color: const Color(0xffffddb7),
               shadowColor: Colors.transparent,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       '$streak',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Icon(Icons.local_fire_department, color: Colors.orange),
+                    const Icon(Icons.local_fire_department, color: Colors.orange),
                   ],
                 ),
               ),
