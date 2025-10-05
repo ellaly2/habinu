@@ -41,16 +41,6 @@ class ProfilePage extends State<ProfilePageState> {
     });
   }
 
-  Future<void> _incrementStreak(int index) async {
-    await LocalStorage.incrementStreak(index);
-    _loadHabits();
-  }
-
-  Future<void> _removeHabit(int index) async {
-    await LocalStorage.removeHabit(index);
-    _loadHabits();
-  }
-
   Map<String, String> get stats => {
     'longestStreak': LocalStorage.getLongestStreak().toString(),
     'totalHabits': LocalStorage.getTotalHabits().toString(),
@@ -156,7 +146,6 @@ class ProfilePage extends State<ProfilePageState> {
               )
             : Column(
                 children: habits.asMap().entries.map((entry) {
-                  int index = entry.key;
                   var habit = entry.value;
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -174,15 +163,12 @@ class ProfilePage extends State<ProfilePageState> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
-                            child: GestureDetector(
-                              onTap: () => _incrementStreak(index),
-                              child: Text(
-                                habit["name"],
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  color: Color(0xFF818181),
-                                  fontWeight: FontWeight.w700,
-                                ),
+                            child: Text(
+                              habit["name"],
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: Color(0xFF818181),
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
