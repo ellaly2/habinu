@@ -53,6 +53,7 @@ class _ProfilePageState extends State<ProfilePage> {
         : 0;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: _profileDetails(context, streak),
       bottomNavigationBar: NavBar(
         pageIndex: 2,
@@ -64,7 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
           } else if (index == 1) {
             Navigator.of(
               context,
-            ).pushReplacement(NoAnimationPageRoute(page: ChooseHabit()));
+            ).pushReplacement(NoAnimationPageRoute(page: CameraPage()));
           }
         },
       ),
