@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LocalStorage {
   static SharedPreferences? _prefs;
   static const _habitsKey = 'habits';
+  static const _postsKey = 'posts';
   static const _maxStreakKey = 'maxStreak';
   static const _favoriteHabitKey = 'favoriteHabit';
 
@@ -18,9 +19,21 @@ class LocalStorage {
     return List<Map<String, dynamic>>.from(decoded);
   }
 
+  static List<Map<String, dynamic>> getPosts() {
+    final String? jsonString = _prefs?.getString(_postsKey);
+    if (jsonString == null) return [];
+    final List<dynamic> decoded = jsonDecode(jsonString);
+    return List<Map<String, dynamic>>.from(decoded);
+  }
+
   static Future<void> _saveHabits(List<Map<String, dynamic>> habits) async {
     final String encoded = jsonEncode(habits);
     await _prefs?.setString(_habitsKey, encoded);
+  }
+
+  static Future<void> _savePosts(List<Map<String, dynamic>> posts) async {
+    final String encoded = jsonEncode(posts);
+    await _prefs?.setString(_postsKey, encoded);
   }
 
   static Future<void> addHabit(String name) async {
@@ -60,6 +73,46 @@ class LocalStorage {
     }
   }
 
+  static Future<void> addPost(String habitName, String imagePath) async {
+    final posts = getPosts();
+    final habits = getHabits();
+
+    // Find the current streak for this habit
+    final habit = habits.firstWhere(
+      (h) => h["name"] == habitName,
+      orElse: () => {"streak": 0},
+    );
+
+    posts.add({
+      "imagePath": imagePath,
+      "habit": habitName,
+      "streak": habit["streak"].toString(),
+      "date": DateTime.now().toString(),
+      "username": "You", // For now, but ready for multi-user in future
+    });
+
+    await _savePosts(posts);
+  }
+
+  static List<Map<String, dynamic>> getPostsForHabit(String habitName) {
+    final posts = getPosts();
+    return posts.where((post) => post["habit"] == habitName).toList();
+  }
+
+  static List<Map<String, dynamic>> getAllPostsSorted() {
+    final posts = getPosts();
+    posts.sort((a, b) {
+      try {
+        final dateA = DateTime.parse(a["date"] ?? "");
+        final dateB = DateTime.parse(b["date"] ?? "");
+        return dateB.compareTo(dateA); // Most recent first
+      } catch (e) {
+        return 0; // If parsing fails, maintain current order
+      }
+    });
+    return posts;
+  }
+
   /// --- Statistics ---
 
   static int getTotalHabits() => getHabits().length;
@@ -75,7 +128,9 @@ class LocalStorage {
     if (habits.isEmpty) {
       return _prefs?.getInt(_maxStreakKey) ?? 0;
     }
-    int currentMax = habits.map((h) => h["streak"] ?? 0).reduce((a, b) => a > b ? a : b);
+    int currentMax = habits
+        .map((h) => h["streak"] ?? 0)
+        .reduce((a, b) => a > b ? a : b);
     int globalMax = _prefs?.getInt(_maxStreakKey) ?? 0;
     return currentMax > globalMax ? currentMax : globalMax;
   }
@@ -89,9 +144,9 @@ class LocalStorage {
     return {"name": name, "streak": maxStreak};
   }
 
-
   static Future<void> clear() async {
     await _prefs?.remove(_habitsKey);
+    await _prefs?.remove(_postsKey);
     // optionally, keep max streak/favorite habit
     // await _prefs?.remove(_maxStreakKey);
     // await _prefs?.remove(_favoriteHabitKey);

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:habinu/models/createHabit.dart';
 import 'package:habinu/models/data.dart';
+import 'dart:io';
 
 class ChooseHabit extends StatefulWidget {
-  const ChooseHabit({Key? key}) : super(key: key);
+  final String? imagePath;
+
+  const ChooseHabit({Key? key, this.imagePath}) : super(key: key);
 
   @override
   _ChooseHabitState createState() => _ChooseHabitState();
@@ -38,7 +41,11 @@ class _ChooseHabitState extends State<ChooseHabit> {
             color: Color(0xFFB3B3B3),
             size: 30,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            // Pop twice to skip the preview screen and go back to main camera
+            Navigator.of(context).pop(); // Pop ChooseHabit
+            Navigator.of(context).pop(); // Pop DisplayPictureScreen
+          },
         ),
         title: const Text(
           "Choose Habit",
@@ -141,42 +148,124 @@ class _ChooseHabitState extends State<ChooseHabit> {
                                   );
                                 }),
                                 const SizedBox(height: 5),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: SizedBox(
-                                    height: 45,
-                                    child: ElevatedButton(
-                                      onPressed: selected != null
-                                          ? () {
-                                              // Handle the post action here
-                                              // For now, just print the selected habit
-                                              print(
-                                                "Posted habit: ${habits[selected!]["name"]}",
-                                              );
-                                            }
-                                          : null, // Button is disabled when no habit is selected
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(
-                                          0xFFfdc88f,
-                                        ),
-                                        disabledBackgroundColor:
-                                            Colors.grey.shade300,
-                                        shape: RoundedRectangleBorder(
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    // Image preview (if imagePath is provided)
+                                    if (widget.imagePath != null)
+                                      Container(
+                                        width: 60,
+                                        height: 60,
+                                        decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(
-                                            10,
+                                            8,
+                                          ),
+                                          border: Border.all(
+                                            color: const Color(0xFFfdc88f),
+                                            width: 2,
+                                          ),
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
+                                          child: Image.file(
+                                            File(widget.imagePath!),
+                                            fit: BoxFit.cover,
                                           ),
                                         ),
                                       ),
-                                      child: const Text(
-                                        "Post",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
+                                    // Post button
+                                    SizedBox(
+                                      height: 45,
+                                      child: ElevatedButton(
+                                        onPressed: selected != null
+                                            ? () async {
+                                                // Handle the post action here
+                                                if (widget.imagePath != null) {
+                                                  final selectedHabit =
+                                                      habits[selected!];
+
+                                                  // Add the post to storage
+                                                  await LocalStorage.addPost(
+                                                    selectedHabit["name"],
+                                                    widget.imagePath!,
+                                                  );
+
+                                                  // Increment the posted counter for the habit
+                                                  await LocalStorage.incrementPosted(
+                                                    selected!,
+                                                  );
+
+                                                  // Show success message
+                                                  if (context.mounted) {
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                          'Posted for ${selectedHabit["name"]}!',
+                                                        ),
+                                                        backgroundColor:
+                                                            const Color(
+                                                              0xFFfdc88f,
+                                                            ),
+                                                        duration:
+                                                            const Duration(
+                                                              seconds: 2,
+                                                            ),
+                                                      ),
+                                                    );
+
+                                                    // Navigate back to main camera or home
+                                                    Navigator.of(
+                                                      context,
+                                                    ).popUntil(
+                                                      (route) => route.isFirst,
+                                                    );
+                                                  }
+                                                } else {
+                                                  // Handle case where no image is provided
+                                                  if (context.mounted) {
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                          'No image to post!',
+                                                        ),
+                                                        backgroundColor:
+                                                            Colors.red,
+                                                      ),
+                                                    );
+                                                  }
+                                                }
+                                              }
+                                            : null, // Button is disabled when no habit is selected
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color(
+                                            0xFFfdc88f,
+                                          ),
+                                          disabledBackgroundColor:
+                                              Colors.grey.shade300,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          "Post",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
                               ],
                             ),
