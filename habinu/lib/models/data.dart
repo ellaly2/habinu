@@ -325,20 +325,10 @@ class LocalStorage {
     for (int i = 0; i < habits.length; i++) {
       final habitName = habits[i]["name"];
 
-      if (habitName == "Piano") {
-        // This is mochi's habit (not yours)
-        habits[i]["streak"] = 7;
-        habits[i]["posted"] = 7;
-        habits[i]["lastUpdated"] = today11AM.toString();
-      } else if (habitName == "Coding") {
-        // This is DanielTheManiel's habit (not yours)
-        habits[i]["streak"] = 15;
-        habits[i]["posted"] = 15;
-        habits[i]["lastUpdated"] = today9AM.toString();
-      } else if (habitName == "Working out") {
+      if (habitName == "Working out") {
         // Your habit - updated today with streak of 3
-        habits[i]["streak"] = 3;
-        habits[i]["posted"] = 3;
+        habits[i]["streak"] = 7;
+        habits[i]["posted"] = 12;
         habits[i]["lastUpdated"] = now.toString();
       } else if (habitName == "Chinese") {
         // Your habit - NOT updated today, streak of 2
