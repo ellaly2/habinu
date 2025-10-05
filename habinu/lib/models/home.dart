@@ -57,50 +57,6 @@ class HomePage extends State<HomePageState> {
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_forever, color: Colors.red, size: 24),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Clear All Data'),
-                    content: const Text(
-                      'This will delete all habits and posts. This action cannot be undone.\n\nAre you sure?',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          await LocalStorage.clear();
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-                            _loadPosts(); // Refresh the UI
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('All data cleared!'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        },
-                        child: const Text(
-                          'Delete All',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            tooltip: 'Clear all data (Debug)',
-          ),
-        ],
       ),
       body: postsList(),
       bottomNavigationBar: NavBar(

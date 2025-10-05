@@ -125,6 +125,7 @@ class _CreateHabitState extends State<CreateHabit> {
                 const SizedBox(height: 20),
                 TextField(
                   controller: _controller,
+                  cursorColor: Color(0xfffbb86a),
                   decoration: InputDecoration(
                     labelText: "Habit Name",
                     border: OutlineInputBorder(

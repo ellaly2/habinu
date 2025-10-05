@@ -1,4 +1,3 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:habinu/models/data.dart';
 import 'dart:io';
@@ -92,170 +91,156 @@ class _ChooseHabitState extends State<ChooseHabit> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: 15),
-                      habits.isEmpty
-                          ? const Text(
-                              "No habits yet.",
-                              style: TextStyle(color: Colors.grey),
-                            )
-                          : Column(
-                              children: [
-                                ...habits.asMap().entries.map((entry) {
-                                  int index = entry.key;
-                                  var habit = entry.value;
-                                  return GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        selected = index;
-                                        isNewHabitSelected = false;
-                                      });
-                                      _newHabitFocusNode.unfocus();
-                                    },
-                                    child: Container(
-                                      margin: const EdgeInsets.symmetric(
-                                        vertical: 5,
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 15,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: selected == index
-                                            ? const Color(
-                                                0xFFfdc88f,
-                                              ).withAlpha(50)
-                                            : const Color(0xFFEEEFF1),
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          color: selected == index
-                                              ? const Color(0xFFfdc88f)
-                                              : Colors.transparent,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              habit["name"],
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                color: selected == index
-                                                    ? const Color(0xFF666666)
-                                                    : const Color(0xFF818181),
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                habit["streak"].toString(),
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 4),
-                                              Icon(
-                                                Icons.local_fire_department,
-                                                color:
-                                                    LocalStorage.wasHabitUpdatedToday(
-                                                      habit,
-                                                    )
-                                                    ? Colors.orange
-                                                    : Colors.grey,
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }),
-                                const SizedBox(height: 5),
-                                // New habit text field
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selected = null;
-                                      isNewHabitSelected = true;
-                                    });
-                                    _newHabitFocusNode.requestFocus();
-                                  },
-                                  child: Container(
-                                    margin: const EdgeInsets.symmetric(
-                                      vertical: 5,
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 5,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: isNewHabitSelected
-                                          ? const Color(
-                                              0xFFfdc88f,
-                                            ).withAlpha(50)
-                                          : const Color(0xFFF4F4F6),
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: isNewHabitSelected
-                                            ? const Color(0xFFfdc88f)
-                                            : Colors.transparent,
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: TextField(
-                                      controller: _newHabitController,
-                                      focusNode: _newHabitFocusNode,
-                                      decoration: const InputDecoration(
-                                        hintText: "Enter new habit...",
-                                        border: InputBorder.none,
-                                        hintStyle: TextStyle(
-                                          fontSize: 20,
-                                          color: Color(0xFF818181),
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        color: Color(0xFF666666),
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                      onTap: () {
-                                        setState(() {
-                                          selected = null;
-                                          isNewHabitSelected = true;
-                                        });
-                                      },
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (value.isNotEmpty) {
-                                            selected = null;
-                                            isNewHabitSelected = true;
-                                          }
-                                          // Always call setState to update button state
-                                        });
-                                      },
-                                    ),
+                      Column(
+                        children: [
+                          ...habits.asMap().entries.map((entry) {
+                            int index = entry.key;
+                            var habit = entry.value;
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selected = index;
+                                  isNewHabitSelected = false;
+                                });
+                                _newHabitFocusNode.unfocus();
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(vertical: 5),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 15,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: selected == index
+                                      ? const Color(0xFFfdc88f).withAlpha(50)
+                                      : const Color(0xFFEEEFF1),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: selected == index
+                                        ? const Color(0xFFfdc88f)
+                                        : Colors.transparent,
+                                    width: 2,
                                   ),
                                 ),
-                                const SizedBox(height: 5),
-                                Row(
+                                child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    // Image preview (if imagePath is provided)
-                                    if (widget.imagePath != null)
-                                      imagePreview(),
-                                    // Post button
-                                    postButton(context),
+                                    Expanded(
+                                      child: Text(
+                                        habit["name"],
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: selected == index
+                                              ? const Color(0xFF666666)
+                                              : const Color(0xFF818181),
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          habit["streak"].toString(),
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Icon(
+                                          Icons.local_fire_department,
+                                          color:
+                                              LocalStorage.wasHabitUpdatedToday(
+                                                habit,
+                                              )
+                                              ? Colors.orange
+                                              : Colors.grey,
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
-                              ],
+                              ),
+                            );
+                          }),
+                          const SizedBox(height: 5),
+                          // New habit text field
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selected = null;
+                                isNewHabitSelected = true;
+                              });
+                              _newHabitFocusNode.requestFocus();
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 5),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 5,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isNewHabitSelected
+                                    ? const Color(0xFFfdc88f).withAlpha(50)
+                                    : const Color(0xFFF4F4F6),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: isNewHabitSelected
+                                      ? const Color(0xFFfdc88f)
+                                      : Colors.transparent,
+                                  width: 2,
+                                ),
+                              ),
+                              child: TextField(
+                                controller: _newHabitController,
+                                focusNode: _newHabitFocusNode,
+                                cursorColor: Color(0xfffbb86a),
+                                decoration: const InputDecoration(
+                                  hintText: "Enter new habit...",
+                                  border: InputBorder.none,
+                                  hintStyle: TextStyle(
+                                    fontSize: 20,
+                                    color: Color(0xFF818181),
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Color(0xFF666666),
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                onTap: () {
+                                  setState(() {
+                                    selected = null;
+                                    isNewHabitSelected = true;
+                                  });
+                                },
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value.isNotEmpty) {
+                                      selected = null;
+                                      isNewHabitSelected = true;
+                                    }
+                                    // Always call setState to update button state
+                                  });
+                                },
+                              ),
                             ),
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Image preview (if imagePath is provided)
+                              if (widget.imagePath != null) imagePreview(),
+                              // Post button
+                              postButton(context),
+                            ],
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
