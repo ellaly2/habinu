@@ -11,11 +11,26 @@ class CreateHabit extends StatefulWidget {
 class _CreateHabitState extends State<CreateHabit> {
   final TextEditingController _controller = TextEditingController();
   List<Map<String, dynamic>> habits = [];
+  bool _hasText = false;
 
   @override
   void initState() {
     super.initState();
     _loadHabits();
+    _controller.addListener(_onTextChanged);
+  }
+
+  void _onTextChanged() {
+    setState(() {
+      _hasText = _controller.text.isNotEmpty;
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_onTextChanged);
+    _controller.dispose();
+    super.dispose();
   }
 
   Future<void> _loadHabits() async {
@@ -30,6 +45,35 @@ class _CreateHabitState extends State<CreateHabit> {
       await LocalStorage.addHabit(_controller.text);
       _controller.clear();
       _loadHabits();
+    }
+  }
+
+  Future<void> _showDeleteConfirmation(int index) async {
+    final bool? shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Habit'),
+          content: Text(
+            'Are you sure you want to delete "${habits[index]["name"]}"?',
+          ),
+          backgroundColor: Colors.white,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldDelete == true) {
+      await _removeHabit(index);
     }
   }
 
@@ -86,13 +130,21 @@ class _CreateHabitState extends State<CreateHabit> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(
+                        color: Color(0xfffbb86a),
+                        width: 2.0,
+                      ),
+                    ),
+                    labelStyle: const TextStyle(color: Color(0xff818181)),
                   ),
                 ),
                 const SizedBox(height: 15),
                 Align(
                   alignment: Alignment.centerRight,
                   child: InkWell(
-                    onTap: _addHabit,
+                    onTap: _hasText ? _addHabit : null,
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -100,7 +152,7 @@ class _CreateHabitState extends State<CreateHabit> {
                         vertical: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFfdc88f),
+                        color: _hasText ? const Color(0xFFfdc88f) : Colors.grey,
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: const Text(
@@ -171,13 +223,17 @@ class _CreateHabitState extends State<CreateHabit> {
                                     const SizedBox(width: 4),
                                     Icon(
                                       Icons.local_fire_department,
-                                      color: LocalStorage.wasHabitUpdatedToday(habit)
+                                      color:
+                                          LocalStorage.wasHabitUpdatedToday(
+                                            habit,
+                                          )
                                           ? Colors.orange
                                           : Colors.grey,
                                     ),
                                     const SizedBox(width: 10),
                                     GestureDetector(
-                                      onTap: () => _removeHabit(index),
+                                      onTap: () =>
+                                          _showDeleteConfirmation(index),
                                       child: const Icon(
                                         Icons.close,
                                         color: Color.fromARGB(

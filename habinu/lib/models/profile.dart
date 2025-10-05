@@ -235,7 +235,7 @@ class ProfilePage extends State<ProfilePageState> {
     return Card(
       color: const Color(0xffffddb7),
       shadowColor: Colors.transparent,
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       child: Padding(
         padding: const EdgeInsets.only(top: 5.0, left: 5.0),
         child: Column(

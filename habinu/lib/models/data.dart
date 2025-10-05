@@ -28,19 +28,19 @@ class LocalStorage {
   /// Checks if a habit was updated today
   static bool wasHabitUpdatedToday(Map<String, dynamic> habit) {
     final lastUpdatedStr = habit["lastUpdated"] as String?;
-    
+
     if (lastUpdatedStr == null || lastUpdatedStr == "never") {
       return false;
     }
-    
+
     try {
       final lastUpdated = DateTime.parse(lastUpdatedStr);
       final today = DateTime.now();
-      
+
       // Check if both dates are on the same day
       return lastUpdated.year == today.year &&
-             lastUpdated.month == today.month &&
-             lastUpdated.day == today.day;
+          lastUpdated.month == today.month &&
+          lastUpdated.day == today.day;
     } catch (e) {
       return false;
     }
