@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:habinu/models/home.dart';
+import 'package:habinu/models/createFirstHabit.dart';
 
 class GetStartedPage extends StatelessWidget {
   @override
@@ -27,7 +27,7 @@ class GetStartedPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => HomePage()),
+                  MaterialPageRoute(builder: (context) => CreateFirstHabit()),
                 );
               },
               style: ElevatedButton.styleFrom(
