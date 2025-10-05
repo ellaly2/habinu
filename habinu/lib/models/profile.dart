@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:habinu/models/data.dart';
 import 'package:habinu/models/navBar.dart';
@@ -7,13 +8,13 @@ import 'package:habinu/models/notificationsPage.dart';
 import 'package:camera/camera.dart';
 import 'package:habinu/models/friendsPage.dart';
 import 'package:habinu/models/createHabit.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfilePageState extends StatefulWidget {
   ProfilePageState({super.key});
-  // Marked fields as final to adhere to immutability requirements
+
   final String username = 'brendan';
   final Map<String, String> stats = {
-    // Insert stats here
     'longestStreak': '9999',
     'totalHabits': '4',
     'habitsPosted': '14',
@@ -30,7 +31,19 @@ class ProfilePage extends State<ProfilePageState> {
   String username = 'brendan';
   bool hasNotifications = false;
 
-  // Sample notifications check - you can modify this to match your notification logic
+  File? _imageFile;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
   List<Map<String, String>> getNotifications() {
     return [
       {
@@ -67,11 +80,11 @@ class ProfilePage extends State<ProfilePageState> {
   }
 
   Map<String, String> get stats => {
-    'longestStreak': LocalStorage.getLongestStreak().toString(),
-    'totalHabits': LocalStorage.getTotalHabits().toString(),
-    'habitsPosted': LocalStorage.getTotalPosts().toString(),
-    'favoriteHabit': LocalStorage.getFavouriteHabit()?['name'] ?? 'None',
-  };
+        'longestStreak': LocalStorage.getLongestStreak().toString(),
+        'totalHabits': LocalStorage.getTotalHabits().toString(),
+        'habitsPosted': LocalStorage.getTotalPosts().toString(),
+        'favoriteHabit': LocalStorage.getFavouriteHabit()?['name'] ?? 'None',
+      };
 
   Future<void> initializeCamera() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -93,13 +106,11 @@ class ProfilePage extends State<ProfilePageState> {
         hasNotifications: hasNotifications,
         onTap: (index) {
           if (index == 0) {
-            Navigator.of(
-              context,
-            ).pushReplacement(NoAnimationPageRoute(page: HomePageState()));
+            Navigator.of(context).pushReplacement(
+                NoAnimationPageRoute(page: HomePageState()));
           } else if (index == 1) {
-            Navigator.of(
-              context,
-            ).pushReplacement(NoAnimationPageRoute(page: const FriendsPage()));
+            Navigator.of(context).pushReplacement(
+                NoAnimationPageRoute(page: const FriendsPage()));
           } else if (index == 2) {
             Navigator.push(
               context,
@@ -109,8 +120,7 @@ class ProfilePage extends State<ProfilePageState> {
             );
           } else if (index == 3) {
             Navigator.of(context).pushReplacement(
-              NoAnimationPageRoute(page: NotificationPageState()),
-            );
+                NoAnimationPageRoute(page: NotificationPageState()));
           }
         },
       ),
@@ -226,46 +236,59 @@ class ProfilePage extends State<ProfilePageState> {
   }
 
   Widget _profilePic(int streak) {
-    return SizedBox(
-      height: 100,
-      width: 150,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Image.asset(
-            'lib/assets/panda-profile.png',
-            height: 100,
-            width: 100,
-            fit: BoxFit.cover,
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Card(
-              color: const Color(0xffffddb7),
-              shadowColor: Colors.transparent,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '$streak',
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: _pickImage,
+      child: SizedBox(
+        height: 100,
+        width: 150,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            ClipOval(
+              child: _imageFile != null
+                  ? Image.file(
+                      _imageFile!,
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.asset(
+                      'lib/assets/panda-profile.png',
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    ),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Card(
+                color: const Color(0xffffddb7),
+                shadowColor: Colors.transparent,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '$streak',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    const Icon(
-                      Icons.local_fire_department,
-                      color: Colors.orange,
-                    ),
-                  ],
+                      const Icon(
+                        Icons.local_fire_department,
+                        color: Colors.orange,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
