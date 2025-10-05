@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
@@ -171,26 +172,15 @@ class DisplayPictureScreen extends StatelessWidget {
     required this.camera,
   });
 
-  void savePicture(BuildContext context) async {
-    final path = await _localPath;
-    final fileName = image.name;
-    final savedPath = "$path/$fileName";
-    await image.saveTo(savedPath);
-    debugPrint(savedPath);
-
-    // Navigate to ChooseHabit with the saved image path
-    if (context.mounted) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ChooseHabit(imagePath: savedPath),
-        ),
-      );
+  Future<void> uploadImage() async {
+    var request = http.MultipartRequest('POST', Uri.parse("http://172.16.226.154:3000/images"));
+    request.files.add(await http.MultipartFile.fromPath('image', image.path));
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      debugPrint('Image uploaded successfully!');
+    } else {
+      debugPrint('Image upload failed with status: ${response.statusCode}');
     }
-  }
-
-  Future<String> get _localPath async {
-    final localDirectory = await getApplicationDocumentsDirectory();
-    return localDirectory.path;
   }
 
   @override
@@ -253,6 +243,9 @@ class DisplayPictureScreen extends StatelessWidget {
             ),
           ],
         ),
+         body: Center(child: Image.file(File(image.path))),
+         floatingActionButton: FloatingActionButton(onPressed: uploadImage),
+         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }
