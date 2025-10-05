@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:habinu/models/navBar.dart';
 import 'package:habinu/models/camera.dart';
 import 'package:habinu/models/profile.dart';
+import 'package:habinu/models/notificationsPage.dart';
 import 'package:habinu/models/data.dart';
 import 'package:camera/camera.dart';
+import 'package:habinu/models/friendsPage.dart';
 import 'dart:io';
 
 class HomePageState extends StatefulWidget {
@@ -16,6 +18,26 @@ class HomePageState extends StatefulWidget {
 class HomePage extends State<HomePageState> {
   late CameraDescription camera;
   List<Map<String, dynamic>> posts = [];
+  bool hasNotifications = false;
+
+  // Sample notifications check - you can modify this to match your notification logic
+  List<Map<String, String>> getNotifications() {
+    return [
+      {
+        'type': 'endorsement',
+        'icon': 'lib/assets/panda-profile.png',
+        'from': 'mochi',
+        'habit': 'Daily Jogging',
+        'timestamp': DateTime.now().subtract(Duration(hours: 2)).toString(),
+      },
+      {
+        'type': 'request',
+        'icon': 'lib/assets/ditto.png',
+        'from': 'DanielTheManiel',
+        'timestamp': DateTime.now().subtract(Duration(days: 1)).toString(),
+      },
+    ];
+  }
 
   Future<void> initializeCamera() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +58,9 @@ class HomePage extends State<HomePageState> {
     super.initState();
     initializeCamera();
     _loadPosts();
+    setState(() {
+      hasNotifications = getNotifications().isNotEmpty;
+    });
   }
 
   @override
@@ -57,59 +82,20 @@ class HomePage extends State<HomePageState> {
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_forever, color: Colors.red, size: 24),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Clear All Data'),
-                    content: const Text(
-                      'This will delete all habits and posts. This action cannot be undone.\n\nAre you sure?',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          await LocalStorage.clear();
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-                            _loadPosts(); // Refresh the UI
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('All data cleared!'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        },
-                        child: const Text(
-                          'Delete All',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            tooltip: 'Clear all data (Debug)',
-          ),
-        ],
       ),
       body: postsList(),
       bottomNavigationBar: NavBar(
         pageIndex: 0,
+        hasNotifications: hasNotifications,
         onTap: (index) {
           if (index == 0) {
             // Refresh posts when home tab is tapped
             _loadPosts();
           } else if (index == 1) {
+            Navigator.of(
+              context,
+            ).pushReplacement(NoAnimationPageRoute(page: const FriendsPage()));
+          } else if (index == 2) {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -118,7 +104,11 @@ class HomePage extends State<HomePageState> {
             ).then(
               (_) => _loadPosts(),
             ); // Refresh posts when returning from camera
-          } else if (index == 2) {
+          } else if (index == 3) {
+            Navigator.of(context).pushReplacement(
+              NoAnimationPageRoute(page: NotificationPageState()),
+            );
+          } else if (index == 4) {
             Navigator.of(
               context,
             ).pushReplacement(NoAnimationPageRoute(page: ProfilePageState()));
