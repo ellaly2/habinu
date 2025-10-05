@@ -82,11 +82,6 @@ class _CreateHabitState extends State<CreateHabit> {
     _loadHabits();
   }
 
-  Future<void> _incrementStreak(int index) async {
-    await LocalStorage.incrementStreak(index);
-    _loadHabits();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -199,15 +194,12 @@ class _CreateHabitState extends State<CreateHabit> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
-                                  child: GestureDetector(
-                                    onTap: () => _incrementStreak(index),
-                                    child: Text(
-                                      habit["name"],
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        color: Color(0xFF818181),
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                  child: Text(
+                                    habit["name"],
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      color: Color(0xFF818181),
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ),
