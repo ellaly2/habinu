@@ -80,9 +80,12 @@ class ProfilePage extends State<ProfilePageState> {
               context,
             ).pushReplacement(NoAnimationPageRoute(page: HomePageState()));
           } else if (index == 1) {
-            Navigator.of(
+            Navigator.push(
               context,
-            ).pushReplacement(NoAnimationPageRoute(page: CameraPageState(camera: camera)));
+              MaterialPageRoute(
+                builder: (context) => CameraPageState(camera: camera),
+              ),
+            );
           }
         },
       ),
