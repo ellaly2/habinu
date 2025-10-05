@@ -7,6 +7,16 @@ class LocalStorage {
   static const _postsKey = 'posts';
   static const _maxStreakKey = 'maxStreak';
   static const _favoriteHabitKey = 'favoriteHabit';
+  static const _profilePicKey = 'profilePicture';
+
+  static String? getProfilePicture() {
+    return _prefs?.getString(_profilePicKey);
+  }
+
+  static Future<void> setProfilePicture(String path) async {
+    await _prefs?.setString(_profilePicKey, path);
+  }
+
 
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
