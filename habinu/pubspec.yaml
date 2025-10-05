@@ -68,13 +68,21 @@ flutter:
     - lib/assets/dog-check.png
     - lib/assets/code.png
     - lib/assets/piano.png
-    - lib/assets/16-9rec.png
-    - lib/assets/4-3rec.png
     - lib/assets/home-active.png
     - lib/assets/profile-active.png
     - lib/assets/profile.png
     - lib/assets/camera.png
     - lib/assets/home.png
+    - lib/assets/list.png
+    - lib/assets/list-active.png
+    - lib/assets/search.png
+    - lib/assets/search-active.png
+    - lib/assets/ditto.png
+    - lib/assets/dog-magnify.png
+    - lib/assets/dog-smile.png
+    - lib/assets/dog-huh.png
+    - lib/assets/add-friends.png
+    - lib/assets/notifications.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

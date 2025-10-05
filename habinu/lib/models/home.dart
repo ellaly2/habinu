@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:habinu/models/navBar.dart';
 import 'package:habinu/models/camera.dart';
 import 'package:habinu/models/profile.dart';
+import 'package:habinu/models/notificationsPage.dart';
 import 'package:habinu/models/data.dart';
 import 'package:camera/camera.dart';
+import 'package:habinu/models/friendsPage.dart';
 import 'dart:io';
 
 class HomePageState extends StatefulWidget {
@@ -16,6 +18,26 @@ class HomePageState extends StatefulWidget {
 class HomePage extends State<HomePageState> {
   late CameraDescription camera;
   List<Map<String, dynamic>> posts = [];
+  bool hasNotifications = false;
+
+  // Sample notifications check - you can modify this to match your notification logic
+  List<Map<String, String>> getNotifications() {
+    return [
+      {
+        'type': 'endorsement',
+        'icon': 'lib/assets/panda-profile.png',
+        'from': 'mochi',
+        'habit': 'Daily Jogging',
+        'timestamp': DateTime.now().subtract(Duration(hours: 2)).toString(),
+      },
+      {
+        'type': 'request',
+        'icon': 'lib/assets/ditto.png',
+        'from': 'DanielTheManiel',
+        'timestamp': DateTime.now().subtract(Duration(days: 1)).toString(),
+      },
+    ];
+  }
 
   Future<void> initializeCamera() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +58,9 @@ class HomePage extends State<HomePageState> {
     super.initState();
     initializeCamera();
     _loadPosts();
+    setState(() {
+      hasNotifications = getNotifications().isNotEmpty;
+    });
   }
 
   @override
@@ -61,11 +86,16 @@ class HomePage extends State<HomePageState> {
       body: postsList(),
       bottomNavigationBar: NavBar(
         pageIndex: 0,
+        hasNotifications: hasNotifications,
         onTap: (index) {
           if (index == 0) {
             // Refresh posts when home tab is tapped
             _loadPosts();
           } else if (index == 1) {
+            Navigator.of(
+              context,
+            ).pushReplacement(NoAnimationPageRoute(page: const FriendsPage()));
+          } else if (index == 2) {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -74,7 +104,11 @@ class HomePage extends State<HomePageState> {
             ).then(
               (_) => _loadPosts(),
             ); // Refresh posts when returning from camera
-          } else if (index == 2) {
+          } else if (index == 3) {
+            Navigator.of(context).pushReplacement(
+              NoAnimationPageRoute(page: NotificationPageState()),
+            );
+          } else if (index == 4) {
             Navigator.of(
               context,
             ).pushReplacement(NoAnimationPageRoute(page: ProfilePageState()));

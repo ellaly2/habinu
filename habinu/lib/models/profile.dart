@@ -3,8 +3,10 @@ import 'package:habinu/models/data.dart';
 import 'package:habinu/models/navBar.dart';
 import 'package:habinu/models/home.dart';
 import 'package:habinu/models/camera.dart';
-import 'package:habinu/models/createHabit.dart';
+import 'package:habinu/models/notificationsPage.dart';
 import 'package:camera/camera.dart';
+import 'package:habinu/models/friendsPage.dart';
+import 'package:habinu/models/createHabit.dart';
 
 class ProfilePageState extends StatefulWidget {
   ProfilePageState({super.key});
@@ -26,12 +28,35 @@ class ProfilePage extends State<ProfilePageState> {
   late CameraDescription camera;
   List<Map<String, dynamic>> habits = [];
   String username = 'brendan';
+  bool hasNotifications = false;
+
+  // Sample notifications check - you can modify this to match your notification logic
+  List<Map<String, String>> getNotifications() {
+    return [
+      {
+        'type': 'endorsement',
+        'icon': 'lib/assets/panda-profile.png',
+        'from': 'mochi',
+        'habit': 'Daily Jogging',
+        'timestamp': DateTime.now().subtract(Duration(hours: 2)).toString(),
+      },
+      {
+        'type': 'request',
+        'icon': 'lib/assets/ditto.png',
+        'from': 'DanielTheManiel',
+        'timestamp': DateTime.now().subtract(Duration(days: 1)).toString(),
+      },
+    ];
+  }
 
   @override
   void initState() {
     super.initState();
     _loadHabits();
     initializeCamera();
+    setState(() {
+      hasNotifications = getNotifications().isNotEmpty;
+    });
   }
 
   Future<void> _loadHabits() async {
@@ -39,11 +64,6 @@ class ProfilePage extends State<ProfilePageState> {
     setState(() {
       habits = validatedHabits;
     });
-  }
-
-  Future<void> _incrementStreak(int index) async {
-    await LocalStorage.incrementStreak(index);
-    _loadHabits();
   }
 
   Map<String, String> get stats => {
@@ -69,18 +89,27 @@ class ProfilePage extends State<ProfilePageState> {
       backgroundColor: Colors.white,
       body: _profileDetails(context, streak),
       bottomNavigationBar: NavBar(
-        pageIndex: 2,
+        pageIndex: 4,
+        hasNotifications: hasNotifications,
         onTap: (index) {
           if (index == 0) {
             Navigator.of(
               context,
             ).pushReplacement(NoAnimationPageRoute(page: HomePageState()));
           } else if (index == 1) {
+            Navigator.of(
+              context,
+            ).pushReplacement(NoAnimationPageRoute(page: const FriendsPage()));
+          } else if (index == 2) {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => CameraPageState(camera: camera),
               ),
+            );
+          } else if (index == 3) {
+            Navigator.of(context).pushReplacement(
+              NoAnimationPageRoute(page: NotificationPageState()),
             );
           }
         },
@@ -102,7 +131,7 @@ class ProfilePage extends State<ProfilePageState> {
             _statsDisplay(stats),
             const SizedBox(height: 20),
             _habitList(),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context)
@@ -124,7 +153,7 @@ class ProfilePage extends State<ProfilePageState> {
                 shadowColor: Colors.transparent,
               ),
               child: const Text(
-                'Edit Habits',
+                'Add New Habit',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
             ),
@@ -132,81 +161,6 @@ class ProfilePage extends State<ProfilePageState> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _habitList() {
-    return Column(
-      children: [
-        const Text(
-          "Your habits:",
-          style: TextStyle(
-            fontSize: 25,
-            color: Color(0xFFfdc88f),
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        const SizedBox(height: 15),
-        habits.isEmpty
-            ? const Text(
-                "No habits yet. Add one below!",
-                style: TextStyle(color: Colors.grey),
-              )
-            : Column(
-                children: habits.asMap().entries.map((entry) {
-                  var habit = entry.value;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 5),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 15,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFeeeff1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              habit["name"],
-                              style: const TextStyle(
-                                fontSize: 20,
-                                color: Color(0xFF818181),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                habit["streak"].toString(),
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Icon(
-                                Icons.local_fire_department,
-                                color: LocalStorage.wasHabitUpdatedToday(habit)
-                                    ? Colors.orange
-                                    : Colors.grey,
-                              ),
-                              const SizedBox(width: 10),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-      ],
     );
   }
 
@@ -313,6 +267,82 @@ class ProfilePage extends State<ProfilePageState> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _habitList() {
+    return Column(
+      children: [
+        const SizedBox(height: 20),
+        const Text(
+          "My Habits",
+          style: TextStyle(
+            fontSize: 30,
+            color: Color(0xFFfdc88f),
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 15),
+        habits.isEmpty
+            ? const Text(
+                "No habits yet. Add one below!",
+                style: TextStyle(color: Colors.grey),
+              )
+            : Column(
+                children: habits.asMap().entries.map((entry) {
+                  var habit = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 15,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFeeeff1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              habit["name"],
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: Color(0xFF818181),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                habit["streak"].toString(),
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.local_fire_department,
+                                color: LocalStorage.wasHabitUpdatedToday(habit)
+                                    ? Colors.orange
+                                    : Colors.grey,
+                              ),
+                              const SizedBox(width: 10),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+      ],
     );
   }
 }
