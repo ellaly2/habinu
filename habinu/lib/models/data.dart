@@ -17,7 +17,6 @@ class LocalStorage {
     await _prefs?.setString(_profilePicKey, path);
   }
 
-
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
   }
@@ -219,6 +218,8 @@ class LocalStorage {
       "streak": habit["streak"].toString(),
       "date": DateTime.now().toString(),
       "username": "You", // For now, but ready for multi-user in future
+      "profilePic":
+          "lib/assets/panda-profile.png", // Default profile pic for user posts
     });
 
     await _savePosts(posts);
@@ -280,5 +281,72 @@ class LocalStorage {
     // optionally, keep max streak/favorite habit
     // await _prefs?.remove(_maxStreakKey);
     // await _prefs?.remove(_favoriteHabitKey);
+  }
+
+  static Future<void> loadTemplateData() async {
+    // Clear existing data first
+    await clear();
+
+    // Add personal habits
+    await addHabit("Working out");
+    await addHabit("Chinese");
+
+    // Get the current date and time for the posts
+    final now = DateTime.now();
+    final today11AM = DateTime(now.year, now.month, now.day, 11, 0);
+    final today9AM = DateTime(now.year, now.month, now.day, 9, 0);
+    final yesterday = now.subtract(Duration(days: 1));
+
+    // Add template posts
+    final posts = getPosts();
+
+    posts.add({
+      "imagePath": "lib/assets/piano.png",
+      "habit": "Piano",
+      "streak": "7", // mochi has been consistent with piano for a week
+      "date": today11AM.toString(),
+      "username": "mochi",
+      "profilePic": "lib/assets/panda-profile.png",
+    });
+
+    posts.add({
+      "imagePath": "lib/assets/code.png",
+      "habit": "Coding",
+      "streak": "15", // DanielTheManiel has a good coding streak
+      "date": today9AM.toString(),
+      "username": "DanielTheManiel",
+      "profilePic": "lib/assets/ditto.png",
+    });
+
+    await _savePosts(posts);
+
+    // Update habits with appropriate streaks and update status
+    final habits = getHabits();
+    for (int i = 0; i < habits.length; i++) {
+      final habitName = habits[i]["name"];
+
+      if (habitName == "Piano") {
+        // This is mochi's habit (not yours)
+        habits[i]["streak"] = 7;
+        habits[i]["posted"] = 7;
+        habits[i]["lastUpdated"] = today11AM.toString();
+      } else if (habitName == "Coding") {
+        // This is DanielTheManiel's habit (not yours)
+        habits[i]["streak"] = 15;
+        habits[i]["posted"] = 15;
+        habits[i]["lastUpdated"] = today9AM.toString();
+      } else if (habitName == "Working out") {
+        // Your habit - updated today with streak of 3
+        habits[i]["streak"] = 3;
+        habits[i]["posted"] = 3;
+        habits[i]["lastUpdated"] = now.toString();
+      } else if (habitName == "Chinese") {
+        // Your habit - NOT updated today, streak of 2
+        habits[i]["streak"] = 2;
+        habits[i]["posted"] = 2;
+        habits[i]["lastUpdated"] = yesterday.toString();
+      }
+    }
+    await _saveHabits(habits);
   }
 }

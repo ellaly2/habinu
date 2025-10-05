@@ -173,7 +173,10 @@ class DisplayPictureScreen extends StatelessWidget {
   });
 
   Future<void> uploadImage() async {
-    var request = http.MultipartRequest('POST', Uri.parse("http://172.16.226.154:3000/images"));
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse("http://172.16.226.154:3000/images"),
+    );
     request.files.add(await http.MultipartFile.fromPath('image', image.path));
     var response = await request.send();
     if (response.statusCode == 200) {
@@ -227,7 +230,15 @@ class DisplayPictureScreen extends StatelessWidget {
                   width: 80,
                   height: 50,
                   child: FloatingActionButton.extended(
-                    onPressed: () => uploadImage,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ChooseHabit(imagePath: image.path),
+                        ),
+                      );
+                    },
                     label: Text(
                       "Next",
                       style: TextStyle(

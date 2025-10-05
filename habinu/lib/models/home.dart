@@ -124,18 +124,21 @@ class HomePage extends State<HomePageState> with TickerProviderStateMixin {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-
         actions: [
           IconButton(
-            icon: const Icon(Icons.delete_forever, color: Colors.red, size: 24),
+            icon: const Icon(
+              Icons.auto_awesome,
+              color: Color(0xfffdc88f),
+              size: 24,
+            ),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text('Clear All Data'),
+                    title: const Text('Load Template Data'),
                     content: const Text(
-                      'This will delete all habits and posts. This action cannot be undone.\n\nAre you sure?',
+                      'This will load sample posts from mochi and DanielTheManiel. Any existing data will be replaced.\n\nContinue?',
                     ),
                     actions: [
                       TextButton(
@@ -144,21 +147,21 @@ class HomePage extends State<HomePageState> with TickerProviderStateMixin {
                       ),
                       TextButton(
                         onPressed: () async {
-                          await LocalStorage.clear();
+                          await LocalStorage.loadTemplateData();
                           if (context.mounted) {
                             Navigator.of(context).pop();
                             _loadPosts(); // Refresh the UI
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('All data cleared!'),
-                                backgroundColor: Colors.red,
+                                content: Text('Template data loaded!'),
+                                backgroundColor: Color(0xfffdc88f),
                               ),
                             );
                           }
                         },
                         child: const Text(
-                          'Delete All',
-                          style: TextStyle(color: Colors.red),
+                          'Load Template',
+                          style: TextStyle(color: Color(0xfffdc88f)),
                         ),
                       ),
                     ],
@@ -166,7 +169,7 @@ class HomePage extends State<HomePageState> with TickerProviderStateMixin {
                 },
               );
             },
-            tooltip: 'Clear all data (Debug)',
+            tooltip: 'Load template data',
           ),
         ],
         backgroundColor: Colors.white,
@@ -257,6 +260,8 @@ class HomePage extends State<HomePageState> with TickerProviderStateMixin {
           streak: postData['streak'] ?? '0',
           date: DateTime.parse(postData['date'] ?? DateTime.now().toString()),
           username: postData['username'] ?? 'Unknown',
+          profilePicPath:
+              postData['profilePic'] ?? 'lib/assets/panda-profile.png',
           index: index,
         );
       },
@@ -270,7 +275,7 @@ class HomePage extends State<HomePageState> with TickerProviderStateMixin {
     required DateTime date,
     required String username,
     required int index,
-    // required String profilePicPath,
+    required String profilePicPath,
   }) {
     String timeAgo = '';
     final now = DateTime.now();
@@ -295,11 +300,7 @@ class HomePage extends State<HomePageState> with TickerProviderStateMixin {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Image.asset(
-                  'lib/assets/panda-profile.png',
-                  height: 35,
-                  width: 50,
-                ),
+                child: Image.asset(profilePicPath, height: 35, width: 50),
               ),
               SizedBox(width: 5),
               Text(username, style: TextStyle(fontWeight: FontWeight.w600)),
@@ -311,23 +312,30 @@ class HomePage extends State<HomePageState> with TickerProviderStateMixin {
           decoration: BoxDecoration(color: Colors.grey[300]),
           child: AspectRatio(
             aspectRatio: 1 / 1,
-            child: File(imagePath).existsSync()
-                ? Image.file(
-                    File(imagePath),
+            child: imagePath.startsWith('lib/assets/')
+                ? Image.asset(
+                    imagePath,
                     height: 500,
                     width: 500,
                     fit: BoxFit.cover,
                   )
-                : Container(
-                    height: 500,
-                    width: 500,
-                    color: Colors.grey[300],
-                    child: const Icon(
-                      Icons.broken_image,
-                      color: Colors.grey,
-                      size: 64,
-                    ),
-                  ),
+                : File(imagePath).existsSync()
+                    ? Image.file(
+                        File(imagePath),
+                        height: 500,
+                        width: 500,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        height: 500,
+                        width: 500,
+                        color: Colors.grey[300],
+                        child: const Icon(
+                          Icons.broken_image,
+                          color: Colors.grey,
+                          size: 64,
+                        ),
+                      ),
           ),
         ),
         Padding(
