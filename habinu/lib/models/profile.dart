@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:habinu/models/data.dart';
 import 'package:habinu/models/navBar.dart';
 import 'package:habinu/models/home.dart';
 import 'package:habinu/models/camera.dart';
 import 'package:habinu/models/createHabit.dart';
-import 'package:habinu/models/data.dart';
+import 'package:camera/camera.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+class ProfilePageState extends StatefulWidget {
+  ProfilePageState({super.key});
+  // Marked fields as final to adhere to immutability requirements
+  final String username = 'brendan';
+  final Map<String, String> stats = {
+    // Insert stats here
+    'longestStreak': '9999',
+    'totalHabits': '4',
+    'habitsPosted': '14',
+    'favoriteHabit': 'Brushing Teeth',
+  };
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  State<ProfilePageState> createState() => ProfilePage();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class ProfilePage extends State<ProfilePageState> {
+  late CameraDescription camera;
   List<Map<String, dynamic>> habits = [];
   String username = 'brendan';
 
@@ -20,6 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     _loadHabits();
+    initializeCamera();
   }
 
   Future<void> _loadHabits() async {
@@ -45,6 +57,12 @@ class _ProfilePageState extends State<ProfilePage> {
         'favoriteHabit': LocalStorage.getFavouriteHabit()?['name'] ?? 'None',
       };
 
+  Future<void> initializeCamera() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    final cameras = await availableCameras();
+    camera = cameras.first;
+  }
+
   @override
   Widget build(BuildContext context) {
     int streak = habits.isNotEmpty
@@ -57,11 +75,13 @@ class _ProfilePageState extends State<ProfilePage> {
         pageIndex: 2,
         onTap: (index) {
           if (index == 0) {
-            Navigator.of(context).pushReplacement(
-                NoAnimationPageRoute(page: HomePage()));
+            Navigator.of(
+              context,
+            ).pushReplacement(NoAnimationPageRoute(page: HomePageState()));
           } else if (index == 1) {
-            Navigator.of(context).pushReplacement(
-                NoAnimationPageRoute(page: CameraPage()));
+            Navigator.of(
+              context,
+            ).pushReplacement(NoAnimationPageRoute(page: CameraPageState(camera: camera)));
           }
         },
       ),

@@ -2,8 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:habinu/models/navBar.dart';
 import 'package:habinu/models/camera.dart';
 import 'package:habinu/models/profile.dart';
+import 'package:camera/camera.dart';
 
-class HomePage extends StatelessWidget {
+class HomePageState extends StatefulWidget {
+  const HomePageState({super.key});
+  
+  @override 
+  State<HomePageState> createState() => HomePage();
+}
+
+class HomePage extends State<HomePageState> {
+  late CameraDescription camera;
   List<Map<String, String>> posts = [
     {
       'imagePath': 'lib/assets/code.png',
@@ -21,6 +30,20 @@ class HomePage extends StatelessWidget {
     },
     // Add more posts as needed
   ];
+
+  Future<void> initializeCamera() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    final cameras = await availableCameras();
+    camera = cameras.first;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    initializeCamera();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,11 +72,11 @@ class HomePage extends StatelessWidget {
           if (index == 1) {
             Navigator.of(
               context,
-            ).pushReplacement(NoAnimationPageRoute(page: CameraPage()));
+            ).pushReplacement(NoAnimationPageRoute(page: CameraPageState(camera: camera)));
           } else if (index == 2) {
             Navigator.of(
               context,
-            ).pushReplacement(NoAnimationPageRoute(page: ProfilePage()));
+            ).pushReplacement(NoAnimationPageRoute(page: ProfilePageState()));
           }
         },
       ),
