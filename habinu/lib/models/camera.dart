@@ -227,7 +227,7 @@ class DisplayPictureScreen extends StatelessWidget {
                   width: 80,
                   height: 50,
                   child: FloatingActionButton.extended(
-                    onPressed: () => savePicture(context),
+                    onPressed: () => uploadImage,
                     label: Text(
                       "Next",
                       style: TextStyle(
@@ -243,9 +243,6 @@ class DisplayPictureScreen extends StatelessWidget {
             ),
           ],
         ),
-         body: Center(child: Image.file(File(image.path))),
-         floatingActionButton: FloatingActionButton(onPressed: uploadImage),
-         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }
