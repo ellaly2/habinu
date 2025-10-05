@@ -28,17 +28,29 @@ class NavBar extends StatelessWidget {
         Container(
           padding: const EdgeInsets.only(top: 20),
           child: BottomNavigationBar(
-            items: const <BottomNavigationBarItem>[
+            items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                icon: Icon(Icons.home, size: 50),
+                icon: Image.asset(
+                  pageIndex == 0 ? 'lib/assets/home-active.png' : 'lib/assets/home.png',
+                  width: 50,
+                  height: 50,
+                ),
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.camera_alt, size: 50),
+                icon: Image.asset(
+                  pageIndex == 1 ? 'lib/assets/camera-active.png' : 'lib/assets/camera.png',
+                  width: 50,
+                  height: 50,
+                ),
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person, size: 50),
+                icon: Image.asset(
+                  pageIndex == 2 ? 'lib/assets/profile-active.png' : 'lib/assets/profile.png',
+                  width: 50,
+                  height: 50,
+                ),
                 label: '',
               ),
             ],
