@@ -64,6 +64,10 @@ flutter:
     - lib/assets/panda-profile.png
     - lib/assets/dog-study.png
     - lib/assets/dog-check.png
+    - lib/assets/code.png
+    - lib/assets/piano.png
+    - lib/assets/16-9rec.png
+    - lib/assets/4-3rec.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
