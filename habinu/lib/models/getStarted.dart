@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habinu/models/createFirstHabit.dart';
+import 'package:habinu/models/login_view.dart'; // 👈 import MainView
 
 class GetStartedPage extends StatelessWidget {
   @override
@@ -27,7 +28,7 @@ class GetStartedPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => CreateFirstHabit()),
+                  MaterialPageRoute(builder: (context) => const MainView()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -54,7 +55,7 @@ class GetStartedPage extends StatelessWidget {
           ],
         ),
       ),
-      backgroundColor: Color(0xffffddb7),
+      backgroundColor: const Color(0xffffddb7),
     );
   }
 }
