@@ -84,6 +84,8 @@ flutter:
     - lib/assets/dog-huh.png
     - lib/assets/add-friends.png
     - lib/assets/notifications.png
+    - lib/assets/stamp.svg
+    - lib/assets/ENDORSED.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

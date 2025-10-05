@@ -7,6 +7,7 @@ import 'package:habinu/models/data.dart';
 import 'package:camera/camera.dart';
 import 'package:habinu/models/friendsPage.dart';
 import 'dart:io';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePageState extends StatefulWidget {
   const HomePageState({super.key});
@@ -15,10 +16,15 @@ class HomePageState extends StatefulWidget {
   State<HomePageState> createState() => HomePage();
 }
 
-class HomePage extends State<HomePageState> {
+class HomePage extends State<HomePageState> with TickerProviderStateMixin {
   late CameraDescription camera;
   List<Map<String, dynamic>> posts = [];
   bool hasNotifications = false;
+
+  // Animation controllers for stamp effects
+  final Map<int, AnimationController> _wiggleControllers = {};
+  final Map<int, AnimationController> _colorControllers = {};
+  final Map<int, bool> _stampClicked = {};
 
   // Sample notifications check - you can modify this to match your notification logic
   List<Map<String, String>> getNotifications() {
@@ -61,6 +67,56 @@ class HomePage extends State<HomePageState> {
     setState(() {
       hasNotifications = getNotifications().isNotEmpty;
     });
+  }
+
+  @override
+  void dispose() {
+    // Dispose all animation controllers
+    for (final controller in _wiggleControllers.values) {
+      controller.dispose();
+    }
+    for (final controller in _colorControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  // Get or create wiggle animation controller for a specific post
+  AnimationController _getWiggleController(int postIndex) {
+    if (!_wiggleControllers.containsKey(postIndex)) {
+      _wiggleControllers[postIndex] = AnimationController(
+        duration: Duration(milliseconds: 500),
+        vsync: this,
+      );
+    }
+    return _wiggleControllers[postIndex]!;
+  }
+
+  // Get or create color animation controller for a specific post
+  AnimationController _getColorController(int postIndex) {
+    if (!_colorControllers.containsKey(postIndex)) {
+      _colorControllers[postIndex] = AnimationController(
+        duration: Duration(milliseconds: 300),
+        vsync: this,
+      );
+    }
+    return _colorControllers[postIndex]!;
+  }
+
+  // Handle stamp click with animation
+  void _onStampTap(int postIndex) {
+    setState(() {
+      _stampClicked[postIndex] = true;
+    });
+
+    final wiggleController = _getWiggleController(postIndex);
+    final colorController = _getColorController(postIndex);
+
+    // Start stamp animations
+    wiggleController.forward().then((_) {
+      wiggleController.reverse();
+    });
+    colorController.forward();
   }
 
   @override
@@ -201,6 +257,7 @@ class HomePage extends State<HomePageState> {
           streak: postData['streak'] ?? '0',
           date: DateTime.parse(postData['date'] ?? DateTime.now().toString()),
           username: postData['username'] ?? 'Unknown',
+          index: index,
         );
       },
     );
@@ -212,6 +269,7 @@ class HomePage extends State<HomePageState> {
     required String streak,
     required DateTime date,
     required String username,
+    required int index,
     // required String profilePicPath,
   }) {
     String timeAgo = '';
@@ -277,8 +335,71 @@ class HomePage extends State<HomePageState> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // Animated stamp with wiggle and color effects
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GestureDetector(
+                  onTap: () => _onStampTap(index),
+                  child: AnimatedBuilder(
+                    animation: Listenable.merge([
+                      _getWiggleController(index),
+                      _getColorController(index),
+                    ]),
+                    builder: (context, child) {
+                      final wiggleController = _getWiggleController(index);
+                      final colorController = _getColorController(index);
+
+                      // Wiggle animation (rotation)
+                      final wiggleAnimation =
+                          Tween<double>(
+                            begin: 0.0,
+                            end: 0.1, // Small rotation for wiggle effect
+                          ).animate(
+                            CurvedAnimation(
+                              parent: wiggleController,
+                              curve: Curves.elasticOut,
+                            ),
+                          );
+
+                      // Color animation (fade to orange)
+                      final colorAnimation =
+                          ColorTween(
+                            begin: null, // Keep original color
+                            end: Color(0xfffbb86a),
+                          ).animate(
+                            CurvedAnimation(
+                              parent: colorController,
+                              curve: Curves.easeInOut,
+                            ),
+                          );
+
+                      return Transform.rotate(
+                        angle: wiggleAnimation.value,
+                        child: ColorFiltered(
+                          colorFilter:
+                              _stampClicked[index] == true &&
+                                  colorAnimation.value != null
+                              ? ColorFilter.mode(
+                                  colorAnimation.value!,
+                                  BlendMode.srcATop,
+                                )
+                              : ColorFilter.mode(
+                                  Colors.transparent,
+                                  BlendMode.dst,
+                                ),
+                          child: SvgPicture.asset(
+                            'lib/assets/stamp.svg',
+                            width: 30,
+                            height: 30,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(habit, style: TextStyle(fontWeight: FontWeight.w600)),
                   Text(timeAgo, style: TextStyle(color: Color(0xff818181))),

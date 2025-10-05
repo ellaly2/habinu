@@ -18,7 +18,12 @@ class NavBar extends StatelessWidget {
   final Function(int) onTap;
   final bool hasNotifications;
 
-  const NavBar({super.key, required this.pageIndex, required this.onTap, this.hasNotifications = false});
+  const NavBar({
+    super.key,
+    required this.pageIndex,
+    required this.onTap,
+    this.hasNotifications = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -67,9 +72,9 @@ class NavBar extends StatelessWidget {
                 icon: Image.asset(
                   pageIndex == 3
                       ? 'lib/assets/list-active.png'
-                      : hasNotifications 
-                          ? 'lib/assets/notifications.png'
-                          : 'lib/assets/list.png',
+                      : hasNotifications
+                      ? 'lib/assets/notifications.png'
+                      : 'lib/assets/list.png',
                   width: 50,
                   height: 50,
                 ),
