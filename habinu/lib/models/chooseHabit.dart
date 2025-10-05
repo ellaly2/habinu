@@ -17,15 +17,16 @@ class _ChooseHabitState extends State<ChooseHabit> {
   int? selected; // Index of the selected habit, null if none selected
 
   Future<void> _refreshHabits() async {
+    final validatedHabits = await LocalStorage.getHabitsWithValidation();
     setState(() {
-      habits = LocalStorage.getHabits();
+      habits = validatedHabits;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    habits = LocalStorage.getHabits();
+    _refreshHabits();
   }
 
   @override
@@ -136,9 +137,14 @@ class _ChooseHabitState extends State<ChooseHabit> {
                                                 ),
                                               ),
                                               const SizedBox(width: 4),
-                                              const Icon(
+                                              Icon(
                                                 Icons.local_fire_department,
-                                                color: Colors.orange,
+                                                color:
+                                                    LocalStorage.wasHabitUpdatedToday(
+                                                      habit,
+                                                    )
+                                                    ? Colors.orange
+                                                    : Colors.grey,
                                               ),
                                             ],
                                           ),
@@ -154,169 +160,198 @@ class _ChooseHabitState extends State<ChooseHabit> {
                                   children: [
                                     // Image preview (if imagePath is provided)
                                     if (widget.imagePath != null)
-                                      Container(
-                                        width: 60,
-                                        height: 60,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                          border: Border.all(
-                                            color: const Color(0xFFfdc88f),
-                                            width: 2,
-                                          ),
-                                        ),
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            6,
-                                          ),
-                                          child: Image.file(
-                                            File(widget.imagePath!),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
+                                      imagePreview(),
                                     // Post button
-                                    SizedBox(
-                                      height: 45,
-                                      child: ElevatedButton(
-                                        onPressed: selected != null
-                                            ? () async {
-                                                // Handle the post action here
-                                                if (widget.imagePath != null) {
-                                                  final selectedHabit =
-                                                      habits[selected!];
-
-                                                  // Add the post to storage
-                                                  await LocalStorage.addPost(
-                                                    selectedHabit["name"],
-                                                    widget.imagePath!,
-                                                  );
-
-                                                  // Increment the posted counter for the habit
-                                                  await LocalStorage.incrementPosted(
-                                                    selected!,
-                                                  );
-
-                                                  // Show success message
-                                                  if (context.mounted) {
-                                                    ScaffoldMessenger.of(
-                                                      context,
-                                                    ).showSnackBar(
-                                                      SnackBar(
-                                                        content: Text(
-                                                          'Posted for ${selectedHabit["name"]}!',
-                                                        ),
-                                                        backgroundColor:
-                                                            const Color(
-                                                              0xFFfdc88f,
-                                                            ),
-                                                        duration:
-                                                            const Duration(
-                                                              seconds: 2,
-                                                            ),
-                                                      ),
-                                                    );
-
-                                                    // Navigate back to main camera or home
-                                                    Navigator.of(
-                                                      context,
-                                                    ).popUntil(
-                                                      (route) => route.isFirst,
-                                                    );
-                                                  }
-                                                } else {
-                                                  // Handle case where no image is provided
-                                                  if (context.mounted) {
-                                                    ScaffoldMessenger.of(
-                                                      context,
-                                                    ).showSnackBar(
-                                                      const SnackBar(
-                                                        content: Text(
-                                                          'No image to post!',
-                                                        ),
-                                                        backgroundColor:
-                                                            Colors.red,
-                                                      ),
-                                                    );
-                                                  }
-                                                }
-                                              }
-                                            : null, // Button is disabled when no habit is selected
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color(
-                                            0xFFfdc88f,
-                                          ),
-                                          disabledBackgroundColor:
-                                              Colors.grey.shade300,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
-                                        ),
-                                        child: const Text(
-                                          "Post",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                    postButton(context),
                                   ],
                                 ),
                               ],
                             ),
+                      const SizedBox(height: 10),
+                      // Add a text field for creating a new habit
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: selected == -1
+                              ? const Color(0xFFfdc88f).withAlpha(50)
+                              : const Color(0xFFEEEFF1),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: selected == -1
+                                ? const Color(0xFFfdc88f)
+                                : Colors.transparent,
+                            width: 2,
+                          ),
+                        ),
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            hintText: "Create New Habit",
+                            hintStyle: TextStyle(
+                              fontSize: 20,
+                              color: Color(0xFF818181),
+                              fontWeight: FontWeight.w700,
+                            ),
+                            border: InputBorder.none,
+                            suffixIcon: Icon(
+                              Icons.add,
+                              color: Color(0xFFfdc88f),
+                            ),
+                          ),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Color(0xFF666666),
+                            fontWeight: FontWeight.w700,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              selected = -1; // Special value for new habit
+                            });
+                          },
+                          onChanged: (value) {
+                            setState(() {
+                              selected = -1; // Keep selected while typing
+                            });
+                          },
+                          onSubmitted: (value) {
+                            // Create new habit when user presses enter
+                            if (value.trim().isNotEmpty) {
+                              createAndSelectNewHabit(value);
+                            }
+                          },
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const CreateHabit(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 15,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEEEFF1),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.transparent,
+                              width: 2,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Expanded(
+                                child: Text(
+                                  "Create New Habit",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Color(0xFF818181),
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              Icon(Icons.add, color: Color(0xFFfdc88f)),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 60),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: SizedBox(
-                  height: 45,
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .push(
-                            MaterialPageRoute(
-                              builder: (_) => const CreateHabit(),
-                            ),
-                          )
-                          .then((_) => _refreshHabits());
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFffddb7).withAlpha(150),
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Create New Habit",
-                          style: TextStyle(
-                            color: Color(0xFF818181),
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Icon(Icons.add, color: Color(0xFF818181)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Container imagePreview() {
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFfdc88f), width: 2),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: Image.file(File(widget.imagePath!), fit: BoxFit.cover),
+      ),
+    );
+  }
+
+  SizedBox postButton(BuildContext context) {
+    return SizedBox(
+      height: 45,
+      child: ElevatedButton(
+        onPressed: selected != null
+            ? () async {
+                // Handle the post action here
+                if (widget.imagePath != null) {
+                  final selectedHabit = habits[selected!];
+
+                  // Increment streak and update lastUpdated date first
+                  await LocalStorage.incrementStreakForPost(selected!);
+
+                  // Add the post to storage (now with updated streak)
+                  await LocalStorage.addPost(
+                    selectedHabit["name"],
+                    widget.imagePath!,
+                  );
+
+                  // Increment the posted counter for the habit
+                  await LocalStorage.incrementPosted(selected!);
+
+                  // Show success message
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Posted for ${selectedHabit["name"]}!'),
+                        backgroundColor: const Color(0xFFfdc88f),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+
+                    // Navigate back to main camera or home
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  }
+                } else {
+                  // Handle case where no image is provided
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('No image to post!'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              }
+            : null, // Button is disabled when no habit is selected
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFfdc88f),
+          disabledBackgroundColor: Colors.grey.shade300,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        child: const Text(
+          "Post",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

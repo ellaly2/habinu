@@ -35,8 +35,9 @@ class ProfilePage extends State<ProfilePageState> {
   }
 
   Future<void> _loadHabits() async {
+    final validatedHabits = await LocalStorage.getHabitsWithValidation();
     setState(() {
-      habits = LocalStorage.getHabits();
+      habits = validatedHabits;
     });
   }
 
@@ -196,9 +197,11 @@ class ProfilePage extends State<ProfilePageState> {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(
+                              Icon(
                                 Icons.local_fire_department,
-                                color: Colors.orange,
+                                color: LocalStorage.wasHabitUpdatedToday(habit)
+                                    ? Colors.orange
+                                    : Colors.grey,
                               ),
                               const SizedBox(width: 10),
                             ],

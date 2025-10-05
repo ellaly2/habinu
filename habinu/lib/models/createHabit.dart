@@ -19,8 +19,9 @@ class _CreateHabitState extends State<CreateHabit> {
   }
 
   Future<void> _loadHabits() async {
+    final validatedHabits = await LocalStorage.getHabitsWithValidation();
     setState(() {
-      habits = LocalStorage.getHabits();
+      habits = validatedHabits;
     });
   }
 
@@ -114,7 +115,7 @@ class _CreateHabitState extends State<CreateHabit> {
                 ),
                 const SizedBox(height: 30),
                 const Text(
-                  "Your habits:",
+                  "Manage Habits",
                   style: TextStyle(
                     fontSize: 25,
                     color: Color(0xFFfdc88f),
@@ -168,9 +169,11 @@ class _CreateHabitState extends State<CreateHabit> {
                                       ),
                                     ),
                                     const SizedBox(width: 4),
-                                    const Icon(
+                                    Icon(
                                       Icons.local_fire_department,
-                                      color: Colors.orange,
+                                      color: LocalStorage.wasHabitUpdatedToday(habit)
+                                          ? Colors.orange
+                                          : Colors.grey,
                                     ),
                                     const SizedBox(width: 10),
                                     GestureDetector(
@@ -192,16 +195,6 @@ class _CreateHabitState extends State<CreateHabit> {
                           );
                         }).toList(),
                       ),
-                const SizedBox(height: 30),
-                // --- Statistics section ---
-                Text(
-                  "Stats:\nTotal Habits: ${LocalStorage.getTotalHabits()}\n"
-                  "Longest Streak: ${LocalStorage.getLongestStreak()}\n"
-                  "Total Posts: ${LocalStorage.getTotalPosts()}\n"
-                  "Favourite Habit: ${LocalStorage.getFavouriteHabit()?['name'] ?? 'None'}",
-                  style: const TextStyle(fontSize: 16, color: Colors.black87),
-                  textAlign: TextAlign.center,
-                ),
               ],
             ),
           ),

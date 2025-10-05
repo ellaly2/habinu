@@ -24,6 +24,8 @@ class HomePage extends State<HomePageState> {
   }
 
   Future<void> _loadPosts() async {
+    // Validate habits first to ensure streaks are up to date
+    await LocalStorage.validateAndUpdateStreaks();
     setState(() {
       posts = LocalStorage.getAllPostsSorted();
     });
@@ -57,11 +59,7 @@ class HomePage extends State<HomePageState> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(
-              Icons.delete_forever,
-              color: Colors.red,
-              size: 24,
-            ),
+            icon: const Icon(Icons.delete_forever, color: Colors.red, size: 24),
             onPressed: () {
               showDialog(
                 context: context,
@@ -69,7 +67,7 @@ class HomePage extends State<HomePageState> {
                   return AlertDialog(
                     title: const Text('Clear All Data'),
                     content: const Text(
-                      'This will delete all habits and posts. This action cannot be undone.\n\nAre you sure?'
+                      'This will delete all habits and posts. This action cannot be undone.\n\nAre you sure?',
                     ),
                     actions: [
                       TextButton(
