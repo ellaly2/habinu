@@ -6,14 +6,14 @@ import 'package:habinu/models/profile.dart';
 class HomePage extends StatelessWidget {
   List<Map<String, String>> posts = [
     {
-      'imagePath': 'lib/assets/dog-study.png',
+      'imagePath': 'lib/assets/code.png',
       'habit': 'Reading',
       'streak': '5',
       'date': DateTime.now().subtract(Duration(hours: 3)).toString(),
       'username': 'brendan',
     },
     {
-      'imagePath': 'lib/assets/dog-check.png',
+      'imagePath': 'lib/assets/piano.png',
       'habit': 'Piano',
       'streak': '15',
       'date': DateTime.now().subtract(Duration(minutes: 15)).toString(),
@@ -25,9 +25,12 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Row(
           children: [
-            Image.asset('lib/assets/dog-study.png'),
+            Image.asset('lib/assets/dog-study.png',
+             width: 50,
+             ),
             Text(
               'Habinu',
               style: TextStyle(
@@ -99,13 +102,16 @@ class HomePage extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.only(top: 9.0),
           child: Row(
             children: [
-              Image.asset(
-                'lib/assets/panda-profile.png',
-                height: 35,
-                width: 35,
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Image.asset(
+                  'lib/assets/panda-profile.png',
+                  height: 35,
+                  width: 50,
+                ),
               ),
               SizedBox(width: 5),
               Text(username, style: TextStyle(fontWeight: FontWeight.w600)),
@@ -113,14 +119,17 @@ class HomePage extends StatelessWidget {
           ),
         ),
         Container(
-          height: 500, // Adjust to image size?
-          width: 500,
+           // Adjust to image size?
+          
           decoration: BoxDecoration(color: Colors.grey[300]),
-          child: Image.asset(
-            imagePath,
-            height: 500,
-            width: 500,
-            fit: BoxFit.cover,
+          child: AspectRatio(
+            aspectRatio: 1 / 1,
+            child: Image.asset(
+              imagePath,
+              height: 500,
+              width: 500,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
         Padding(
