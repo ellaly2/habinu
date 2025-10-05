@@ -1,41 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:habinu/models/getStarted.dart';
+import 'package:habinu/models/data.dart';
 import 'package:habinu/models/home.dart';
+import 'package:habinu/models/data.dart'; // <-- import your LocalStorage
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // required for async init
+  await LocalStorage.init(); // initialize shared_preferences
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Poppins',
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  bool firstTimeUser = true;
-
   @override
   Widget build(BuildContext context) {
-    return firstTimeUser ? GetStartedPage() : HomePage();
+    return HomePage(); // no changes here
   }
 }
