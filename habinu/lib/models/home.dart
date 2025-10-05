@@ -320,22 +320,22 @@ class HomePage extends State<HomePageState> with TickerProviderStateMixin {
                     fit: BoxFit.cover,
                   )
                 : File(imagePath).existsSync()
-                    ? Image.file(
-                        File(imagePath),
-                        height: 500,
-                        width: 500,
-                        fit: BoxFit.cover,
-                      )
-                    : Container(
-                        height: 500,
-                        width: 500,
-                        color: Colors.grey[300],
-                        child: const Icon(
-                          Icons.broken_image,
-                          color: Colors.grey,
-                          size: 64,
-                        ),
-                      ),
+                ? Image.file(
+                    File(imagePath),
+                    height: 500,
+                    width: 500,
+                    fit: BoxFit.cover,
+                  )
+                : Container(
+                    height: 500,
+                    width: 500,
+                    color: Colors.grey[300],
+                    child: const Icon(
+                      Icons.broken_image,
+                      color: Colors.grey,
+                      size: 64,
+                    ),
+                  ),
           ),
         ),
         Padding(

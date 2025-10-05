@@ -338,5 +338,9 @@ class LocalStorage {
       }
     }
     await _saveHabits(habits);
+    
+    // Set Working out as the favorite habit
+    await _prefs?.setString(_favoriteHabitKey, "Working out");
+    await _prefs?.setInt(_maxStreakKey, 7);
   }
 }
