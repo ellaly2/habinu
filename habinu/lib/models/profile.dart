@@ -34,6 +34,26 @@ class ProfilePage extends State<ProfilePageState> {
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
 
+  @override
+  void initState() {
+    super.initState();
+    _loadHabits();
+    initializeCamera();
+    setState(() {
+      hasNotifications = getNotifications().isNotEmpty;
+    });
+    _loadProfilePicture(); // Load saved profile picture
+  }
+
+  Future<void> _loadProfilePicture() async {
+    final path = LocalStorage.getProfilePicture();
+    if (path != null && path.isNotEmpty) {
+      setState(() {
+        _imageFile = File(path);
+      });
+    }
+  }
+
   Future<void> _pickImage() async {
     final XFile? pickedFile =
         await _picker.pickImage(source: ImageSource.gallery);
@@ -41,6 +61,7 @@ class ProfilePage extends State<ProfilePageState> {
       setState(() {
         _imageFile = File(pickedFile.path);
       });
+      await LocalStorage.setProfilePicture(pickedFile.path); // Save persistently
     }
   }
 
@@ -60,16 +81,6 @@ class ProfilePage extends State<ProfilePageState> {
         'timestamp': DateTime.now().subtract(Duration(days: 1)).toString(),
       },
     ];
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadHabits();
-    initializeCamera();
-    setState(() {
-      hasNotifications = getNotifications().isNotEmpty;
-    });
   }
 
   Future<void> _loadHabits() async {
